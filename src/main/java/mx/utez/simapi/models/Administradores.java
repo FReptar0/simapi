@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 public class Administradores {
     @Id
-    private int idAdministrador;
+    private Long idAdministrador;
     private String nombre;
     private String apellidos;
     private String correo;
