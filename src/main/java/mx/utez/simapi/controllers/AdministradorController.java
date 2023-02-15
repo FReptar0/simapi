@@ -1,7 +1,6 @@
 package mx.utez.simapi.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -133,6 +132,33 @@ public class AdministradorController {
             response.setError(true);
             response.setStatusCode(400);
             response.setMessage("Error al actualizar administrador");
+            response.setData(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping(value = "/{idAdministrador}")
+    public ResponseEntity<CustomResponse> deleteAdministrador(@PathVariable String idAdministrador) {
+        CustomResponse response = new CustomResponse();
+        Administradores adminToDelete = administradoresRepository.findById(idAdministrador).get();
+        try {
+            if (adminToDelete == null) {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("Administrador no encontrado");
+                response.setData(adminToDelete);
+            } else {
+                administradoresRepository.delete(adminToDelete);
+                response.setError(false);
+                response.setStatusCode(200);
+                response.setMessage("Administrador eliminado correctamente");
+                response.setData(adminToDelete);
+            }
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.setError(true);
+            response.setStatusCode(400);
+            response.setMessage("Error al eliminar administrador");
             response.setData(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
