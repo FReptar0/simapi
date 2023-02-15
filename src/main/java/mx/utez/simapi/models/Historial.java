@@ -17,8 +17,10 @@ import lombok.Setter;
 public class Historial {
     @Id
     private Long idHistorial;
-    private String fecha;
-    private String hora;
+    private String fechaPeticion;
+    private String horaDePeticion;
+    private String fechaAtencion;
+    private String horaDeAtencion;
     private String descripcion;
     private Long idPaciente;
     private Long idEnfermera;

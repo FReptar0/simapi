@@ -15,10 +15,8 @@ public class Salas {
     @Id
     private Long idSala;
     private Long numeroDeSala;
-    private Long cantidadDeIslas;
     private Long cantidadDeCamillas;
     private boolean estado;
     private Long idJefeDeEnfermeria;
-    private Long idAdministrador;
     private Long idEnfermeraResponsable;
 }

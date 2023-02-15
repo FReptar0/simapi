@@ -15,8 +15,6 @@ public class Islas {
     @Id
     private Long idIsla;
     private Long numeroDeIsla;
-    private String nombre;
-    private Long cantidadDeCamillas;
     private boolean estado;
     private Long idSala;
     private Long idEnfermeraResponsable;

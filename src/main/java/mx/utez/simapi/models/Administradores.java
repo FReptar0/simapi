@@ -8,17 +8,19 @@ import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.mongodb.lang.NonNull;
+
 @Document(collection = "administradores")
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
-@Getter
+@Getter 
 public class Administradores {
     @Id
-    private Long idAdministrador;
+    private String idAdministrador;
     private String nombre;
     private String apellidos;
     private String correo;
     private String contrasena;
-    
+    private String rol;
 }
