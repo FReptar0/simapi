@@ -47,7 +47,7 @@ public class AdministradorController {
     public ResponseEntity<CustomResponse> getAdministradores() {
         CustomResponse response = new CustomResponse();
         try {
-            if(administradoresRepository.findAll().isEmpty()){
+            if (administradoresRepository.findAll().isEmpty()) {
                 response.setError(false);
                 response.setStatusCode(200);
                 response.setMessage("Error al obtener administradores");
@@ -95,20 +95,47 @@ public class AdministradorController {
     }
 
     @PutMapping(value = "/{idAdministrador}")
-    public ResponseEntity<CustomResponse> updateAdmin(@PathVariable String idAdministrador, @RequestBody Administradores admin){
+    public ResponseEntity<CustomResponse> updateAdmin(@PathVariable String idAdministrador,
+            @RequestBody Administradores admin) {
         CustomResponse response = new CustomResponse();
         Administradores adminToUpdate = administradoresRepository.findById(idAdministrador).get();
         try {
-            if (admin.getApellidos().isEmpty() || admin.getNombre().isEmpty() || admin.getCorreo().isEmpty() || admin.getContrasena().isEmpty() || admin.getRol().isEmpty() ) {
-              response.setError(true);
-              response.setStatusCode(400);
-              response.setMessage("Verifica que todos los campos esten llenos");  
-              response.setData(admin);
+            if (admin.getApellidos().isEmpty() || admin.getNombre().isEmpty() || admin.getCorreo().isEmpty()
+                    || admin.getContrasena().isEmpty() || admin.getRol().isEmpty()) {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("Verifica que todos los campos esten llenos");
+                response.setData(admin);
+            } else if (adminToUpdate == null) {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("Administrador no encontrado");
+                response.setData(admin);
+            } else if (!admin.getApellidos().isEmpty()) {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("El id del administrador no puede ser modificado");
+                response.setData(admin);
+            } else {
+                adminToUpdate.setApellidos(admin.getApellidos());
+                adminToUpdate.setNombre(admin.getNombre());
+                adminToUpdate.setCorreo(admin.getCorreo());
+                adminToUpdate.setContrasena(admin.getContrasena());
+                adminToUpdate.setRol(admin.getRol());
+                administradoresRepository.save(adminToUpdate);
+                response.setError(false);
+                response.setStatusCode(200);
+                response.setMessage("Administrador actualizado correctamente");
+                response.setData(admin);
             }
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
-            // TODO: handle exception
+            response.setError(true);
+            response.setStatusCode(400);
+            response.setMessage("Error al actualizar administrador");
+            response.setData(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return null;
     }
 
 }
