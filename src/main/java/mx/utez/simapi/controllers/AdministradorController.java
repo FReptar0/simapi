@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import mx.utez.simapi.models.Administradores;
 import mx.utez.simapi.repository.AdministradoresRepository;
 import mx.utez.simapi.utils.CustomResponse;
+import mx.utez.simapi.utils.UUIDGenerator;
 
 @RestController
 @RequestMapping("/administradores")
@@ -26,18 +27,36 @@ public class AdministradorController {
     @PostMapping
     public ResponseEntity<CustomResponse> createAdministrador(@RequestBody Administradores admin) {
         CustomResponse response = new CustomResponse();
+        // buscar si existe el administrador
+        Administradores adminToCreate = administradoresRepository.findByCorreo(admin.getCorreo());
         try {
-            administradoresRepository.save(admin);
-            response.setError(false);
-            response.setStatusCode(200);
-            response.setMessage("Administrador creado correctamente");
-            response.setData(admin);
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
+            if (admin.getApellidos().isEmpty() || admin.getNombre().isEmpty() || admin.getCorreo().isEmpty()
+                    || admin.getContrasena().isEmpty() || admin.getRol().isEmpty()) {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("Verifica que todos los campos esten llenos");
+                response.setData(admin);
+            } else if (adminToCreate != null) {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("El administrador ya existe");
+                response.setData(adminToCreate);
+            } else {
+                admin.setIdAdministrador(UUIDGenerator.getId());
+                System.out.println(admin.getIdAdministrador());
+                administradoresRepository.save(admin);
+                response.setError(false);
+                response.setStatusCode(200);
+                response.setMessage("Administrador creado correctamente");
+                response.setData(admin);
+            }
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.setError(true);
             response.setStatusCode(400);
             response.setMessage("Error al crear administrador");
             response.setData(e.getMessage());
+            System.out.println("Error: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -98,6 +117,8 @@ public class AdministradorController {
             @RequestBody Administradores admin) {
         CustomResponse response = new CustomResponse();
         Administradores adminToUpdate = administradoresRepository.findById(idAdministrador).get();
+        adminToUpdate.setIdAdministrador(idAdministrador);
+        admin.setIdAdministrador(idAdministrador);
         try {
             if (admin.getApellidos().isEmpty() || admin.getNombre().isEmpty() || admin.getCorreo().isEmpty()
                     || admin.getContrasena().isEmpty() || admin.getRol().isEmpty()) {
@@ -109,11 +130,6 @@ public class AdministradorController {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("Administrador no encontrado");
-                response.setData(admin);
-            } else if (!admin.getApellidos().isEmpty()) {
-                response.setError(true);
-                response.setStatusCode(400);
-                response.setMessage("El id del administrador no puede ser modificado");
                 response.setData(admin);
             } else {
                 adminToUpdate.setApellidos(admin.getApellidos());

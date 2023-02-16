@@ -1,20 +1,12 @@
 package mx.utez.simapi.models;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.Getter;
+import lombok.Data;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.mongodb.lang.NonNull;
-
 @Document(collection = "administradores")
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter 
+@Data
 public class Administradores {
     @Id
     private String idAdministrador;

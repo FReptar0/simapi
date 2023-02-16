@@ -4,6 +4,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import mx.utez.simapi.models.Administradores;
 
-public interface AdministradoresRepository extends MongoRepository<Administradores, String>{
-    
+public interface AdministradoresRepository extends MongoRepository<Administradores, String> {
+    Administradores findByCorreo(String correo);
 }
