@@ -1,5 +1,7 @@
 package mx.utez.simapi.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import mx.utez.simapi.models.Administradores;
 import mx.utez.simapi.repository.AdministradoresRepository;
+import mx.utez.simapi.utils.CustomHandlerException;
 import mx.utez.simapi.utils.CustomResponse;
 import mx.utez.simapi.utils.UUIDGenerator;
+import mx.utez.simapi.utils.EmailValidator;
 
 @RestController
 @RequestMapping("/administradores")
@@ -25,8 +29,8 @@ public class AdministradorController {
     private AdministradoresRepository administradoresRepository;
 
     @PostMapping
-    public ResponseEntity<CustomResponse> createAdministrador(@RequestBody Administradores admin) {
-        CustomResponse response = new CustomResponse();
+    public ResponseEntity<CustomResponse<Administradores>> createAdministrador(@RequestBody Administradores admin) {
+        CustomResponse<Administradores> response = new CustomResponse<Administradores>();
         // buscar si existe el administrador
         Administradores adminToCreate = administradoresRepository.findByCorreo(admin.getCorreo());
         try {
@@ -42,28 +46,35 @@ public class AdministradorController {
                 response.setMessage("El administrador ya existe");
                 response.setData(adminToCreate);
             } else {
-                admin.setIdAdministrador(UUIDGenerator.getId());
-                System.out.println(admin.getIdAdministrador());
-                administradoresRepository.save(admin);
-                response.setError(false);
-                response.setStatusCode(200);
-                response.setMessage("Administrador creado correctamente");
-                response.setData(admin);
+                if (EmailValidator.validation(admin.getCorreo())) {
+                    admin.setIdAdministrador(UUIDGenerator.getId());
+                    System.out.println(admin.getIdAdministrador());
+                    administradoresRepository.save(admin);
+                    response.setError(false);
+                    response.setStatusCode(200);
+                    response.setMessage("Administrador creado correctamente");
+                    response.setData(admin);
+                } else {
+                    response.setError(true);
+                    response.setStatusCode(400);
+                    response.setMessage("El correo no es valido");
+                    response.setData(admin);
+                }
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.setError(true);
             response.setStatusCode(400);
-            response.setMessage("Error al crear administrador");
-            response.setData(e.getMessage());
+            response.setMessage(CustomHandlerException.handleException(e) + "\nError al crear administrador");
+            response.setData(null);
             System.out.println("Error: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping
-    public ResponseEntity<CustomResponse> getAdministradores() {
-        CustomResponse response = new CustomResponse();
+    public ResponseEntity<CustomResponse<List<Administradores>>> getAdministradores() {
+        CustomResponse<List<Administradores>> response = new CustomResponse<List<Administradores>>();
         try {
             if (administradoresRepository.findAll().isEmpty()) {
                 response.setError(false);
@@ -80,15 +91,15 @@ public class AdministradorController {
         } catch (Exception e) {
             response.setError(true);
             response.setStatusCode(400);
-            response.setMessage("Error al obtener administradores");
-            response.setData(e.getMessage());
+            response.setMessage(CustomHandlerException.handleException(e) + "\nError al obtener administradores");
+            response.setData(null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping(value = "/{idAdministrador}")
-    public ResponseEntity<CustomResponse> getAdmin(@PathVariable String idAdministrador) {
-        CustomResponse response = new CustomResponse();
+    public ResponseEntity<CustomResponse<Administradores>> getAdmin(@PathVariable String idAdministrador) {
+        CustomResponse<Administradores> response = new CustomResponse<Administradores>();
         try {
 
             if (administradoresRepository.findById(idAdministrador).isEmpty()) {
@@ -100,22 +111,22 @@ public class AdministradorController {
                 response.setError(false);
                 response.setStatusCode(200);
                 response.setMessage("Administrador obtenido correctamente");
-                response.setData(administradoresRepository.findById(idAdministrador));
+                response.setData(administradoresRepository.findById(idAdministrador).get());
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
         } catch (Exception e) {
             response.setError(true);
             response.setStatusCode(400);
-            response.setMessage("Error al obtener administradores");
-            response.setData(e.getMessage());
+            response.setMessage(CustomHandlerException.handleException(e) + "\nError al obtener administradores");
+            response.setData(null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping(value = "/{idAdministrador}")
-    public ResponseEntity<CustomResponse> updateAdmin(@PathVariable String idAdministrador,
+    public ResponseEntity<CustomResponse<Administradores>> updateAdmin(@PathVariable String idAdministrador,
             @RequestBody Administradores admin) {
-        CustomResponse response = new CustomResponse();
+        CustomResponse<Administradores> response = new CustomResponse<Administradores>();
         Administradores adminToUpdate = administradoresRepository.findById(idAdministrador).get();
         adminToUpdate.setIdAdministrador(idAdministrador);
         admin.setIdAdministrador(idAdministrador);
@@ -126,36 +137,38 @@ public class AdministradorController {
                 response.setStatusCode(400);
                 response.setMessage("Verifica que todos los campos esten llenos");
                 response.setData(admin);
-            } else if (adminToUpdate == null) {
-                response.setError(true);
-                response.setStatusCode(400);
-                response.setMessage("Administrador no encontrado");
-                response.setData(admin);
             } else {
-                adminToUpdate.setApellidos(admin.getApellidos());
-                adminToUpdate.setNombre(admin.getNombre());
-                adminToUpdate.setCorreo(admin.getCorreo());
-                adminToUpdate.setContrasena(admin.getContrasena());
-                adminToUpdate.setRol(admin.getRol());
-                administradoresRepository.save(adminToUpdate);
-                response.setError(false);
-                response.setStatusCode(200);
-                response.setMessage("Administrador actualizado correctamente");
-                response.setData(admin);
+                if (EmailValidator.validation(admin.getCorreo())) {
+                    adminToUpdate.setApellidos(admin.getApellidos());
+                    adminToUpdate.setNombre(admin.getNombre());
+                    adminToUpdate.setCorreo(admin.getCorreo());
+                    adminToUpdate.setContrasena(admin.getContrasena());
+                    adminToUpdate.setRol(admin.getRol());
+                    administradoresRepository.save(adminToUpdate);
+                    response.setError(false);
+                    response.setStatusCode(200);
+                    response.setMessage("Administrador actualizado correctamente");
+                    response.setData(admin);
+                } else {
+                    response.setError(true);
+                    response.setStatusCode(400);
+                    response.setMessage("El correo no es valido");
+                    response.setData(admin);
+                }
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.setError(true);
             response.setStatusCode(400);
-            response.setMessage("Error al actualizar administrador");
-            response.setData(e.getMessage());
+            response.setMessage(CustomHandlerException.handleException(e) + "\nError al actualizar administrador");
+            response.setData(null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @DeleteMapping(value = "/{idAdministrador}")
-    public ResponseEntity<CustomResponse> deleteAdministrador(@PathVariable String idAdministrador) {
-        CustomResponse response = new CustomResponse();
+    public ResponseEntity<CustomResponse<Administradores>> deleteAdministrador(@PathVariable String idAdministrador) {
+        CustomResponse<Administradores> response = new CustomResponse<Administradores>();
         Administradores adminToDelete = administradoresRepository.findById(idAdministrador).get();
         try {
             if (adminToDelete == null) {
@@ -174,8 +187,8 @@ public class AdministradorController {
         } catch (Exception e) {
             response.setError(true);
             response.setStatusCode(400);
-            response.setMessage("Error al eliminar administrador");
-            response.setData(e.getMessage());
+            response.setMessage(CustomHandlerException.handleException(e) + "\nError al eliminar administrador");
+            response.setData(null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

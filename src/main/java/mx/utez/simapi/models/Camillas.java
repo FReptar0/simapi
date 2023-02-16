@@ -11,11 +11,9 @@ import lombok.Data;
 public class Camillas {
     @Id
     private String idCamilla;
-    private String nombre;
-    private String descripcion;
     private boolean estado;
-    private Long idPaciente;
-    private Long idIsla;
-    private Long idSala;
-    private Long idEnfermera;
+    private String idPaciente;
+    private String idIsla;
+    private String idSala;
+    private String idEnfermera;
 }

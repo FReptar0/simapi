@@ -10,15 +10,15 @@ import lombok.Data;
 @Document(collection = "historial")
 public class Historial {
     @Id
-    private Long idHistorial;
+    private String idHistorial;
     private String fechaPeticion;
     private String horaDePeticion;
     private String fechaAtencion;
     private String horaDeAtencion;
     private String descripcion;
-    private Long idPaciente;
-    private Long idEnfermera;
-    private Long idCamilla;
-    private Long idIsla;
-    private Long idSala;
+    private String idPaciente;
+    private String idEnfermera;
+    private String idCamilla;
+    private String idIsla;
+    private String idSala;
 }
