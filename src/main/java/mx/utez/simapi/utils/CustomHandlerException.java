@@ -40,7 +40,6 @@ public class CustomHandlerException {
             case "TransientDataAccessException":
                 errorMessage = "Error: Problema de acceso a datos transitorio";
                 break;
-            // Agrega otros casos aquí para manejar otras excepciones
             default:
                 errorMessage = "Error desconocido: " + e.getMessage();
                 break;
