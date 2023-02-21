@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -112,6 +114,63 @@ public class CamillasController {
             response.setError(true);
             response.setStatusCode(400);
             response.setMessage(CustomHandlerException.handleException(e) + "\nError al obtener camilla");
+            response.setData(null);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping(value = "/{idCamilla}")
+    public ResponseEntity<CustomResponse<Camillas>> updateCamilla(@PathVariable String idCamilla,
+            @RequestBody Camillas camilla) {
+        CustomResponse<Camillas> response = new CustomResponse<Camillas>();
+        try {
+            Camillas camillaDB = camillasRepository.findById(idCamilla).orElse(null);
+            if (camillaDB == null) {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("Camilla no encontrada");
+                response.setData(null);
+            } else {
+                camillaDB.setIdEnfermera(camilla.getIdEnfermera());
+                camillaDB.setIdPaciente(camilla.getIdPaciente());
+                camillasRepository.save(camillaDB);
+                response.setError(false);
+                response.setStatusCode(200);
+                response.setMessage("Camilla actualizada correctamente");
+                response.setData(camillaDB);
+            }
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.setError(true);
+            response.setStatusCode(400);
+            response.setMessage(CustomHandlerException.handleException(e) + "\nError al actualizar camilla");
+            response.setData(null);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping(value = "/{idCamilla}")
+    public ResponseEntity<CustomResponse<Camillas>> deleteCamilla(@PathVariable String idCamilla) {
+        CustomResponse<Camillas> response = new CustomResponse<Camillas>();
+        try {
+            Camillas camilla = camillasRepository.findById(idCamilla).orElse(null);
+            if (camilla == null) {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("Camilla no encontrada");
+                response.setData(null);
+            } else {
+                camillasRepository.delete(camilla);
+                response.setError(false);
+                response.setStatusCode(200);
+                response.setMessage("Camilla eliminada correctamente");
+                response.setData(null);
+            }
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.setError(true);
+            response.setStatusCode(400);
+            response.setMessage(CustomHandlerException.handleException(e) + "\nError al eliminar camilla");
             response.setData(null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }

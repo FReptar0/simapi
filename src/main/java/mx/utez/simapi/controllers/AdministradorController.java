@@ -101,8 +101,8 @@ public class AdministradorController {
     public ResponseEntity<CustomResponse<Administradores>> getAdmin(@PathVariable String idAdministrador) {
         CustomResponse<Administradores> response = new CustomResponse<Administradores>();
         try {
-
-            if (administradoresRepository.findById(idAdministrador).isEmpty()) {
+            Administradores admin = administradoresRepository.findById(idAdministrador).orElse(null);
+            if (admin == null) {
                 response.setError(false);
                 response.setStatusCode(400);
                 response.setMessage("Administrador no encontrado");
@@ -124,36 +124,41 @@ public class AdministradorController {
     }
 
     @PutMapping(value = "/{idAdministrador}")
-    public ResponseEntity<CustomResponse<Administradores>> updateAdmin(@PathVariable String idAdministrador,
+    public ResponseEntity<CustomResponse<Administradores>> updateAdministrador(@PathVariable String idAdministrador,
             @RequestBody Administradores admin) {
         CustomResponse<Administradores> response = new CustomResponse<Administradores>();
         Administradores adminToUpdate = administradoresRepository.findById(idAdministrador).get();
-        adminToUpdate.setIdAdministrador(idAdministrador);
-        admin.setIdAdministrador(idAdministrador);
         try {
-            if (admin.getApellidos().isEmpty() || admin.getNombre().isEmpty() || admin.getCorreo().isEmpty()
-                    || admin.getContrasena().isEmpty() || admin.getRol().isEmpty()) {
+            if (adminToUpdate == null) {
                 response.setError(true);
                 response.setStatusCode(400);
-                response.setMessage("Verifica que todos los campos esten llenos");
-                response.setData(admin);
+                response.setMessage("Administrador no encontrado");
+                response.setData(adminToUpdate);
             } else {
-                if (EmailValidator.validation(admin.getCorreo())) {
-                    adminToUpdate.setApellidos(admin.getApellidos());
-                    adminToUpdate.setNombre(admin.getNombre());
-                    adminToUpdate.setCorreo(admin.getCorreo());
-                    adminToUpdate.setContrasena(admin.getContrasena());
-                    adminToUpdate.setRol(admin.getRol());
-                    administradoresRepository.save(adminToUpdate);
-                    response.setError(false);
-                    response.setStatusCode(200);
-                    response.setMessage("Administrador actualizado correctamente");
-                    response.setData(admin);
-                } else {
+                if (admin.getApellidos().isEmpty() || admin.getNombre().isEmpty() || admin.getCorreo().isEmpty()
+                        || admin.getContrasena().isEmpty() || admin.getRol().isEmpty()) {
                     response.setError(true);
                     response.setStatusCode(400);
-                    response.setMessage("El correo no es valido");
+                    response.setMessage("Verifica que todos los campos esten llenos");
                     response.setData(admin);
+                } else {
+                    if (EmailValidator.validation(admin.getCorreo())) {
+                        adminToUpdate.setApellidos(admin.getApellidos());
+                        adminToUpdate.setNombre(admin.getNombre());
+                        adminToUpdate.setCorreo(admin.getCorreo());
+                        adminToUpdate.setContrasena(admin.getContrasena());
+                        adminToUpdate.setRol(admin.getRol());
+                        administradoresRepository.save(adminToUpdate);
+                        response.setError(false);
+                        response.setStatusCode(200);
+                        response.setMessage("Administrador actualizado correctamente");
+                        response.setData(adminToUpdate);
+                    } else {
+                        response.setError(true);
+                        response.setStatusCode(400);
+                        response.setMessage("El correo no es valido");
+                        response.setData(admin);
+                    }
                 }
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -169,7 +174,7 @@ public class AdministradorController {
     @DeleteMapping(value = "/{idAdministrador}")
     public ResponseEntity<CustomResponse<Administradores>> deleteAdministrador(@PathVariable String idAdministrador) {
         CustomResponse<Administradores> response = new CustomResponse<Administradores>();
-        Administradores adminToDelete = administradoresRepository.findById(idAdministrador).get();
+        Administradores adminToDelete = administradoresRepository.findById(idAdministrador).orElse(null);
         try {
             if (adminToDelete == null) {
                 response.setError(true);
