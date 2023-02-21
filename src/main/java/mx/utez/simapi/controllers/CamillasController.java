@@ -133,6 +133,9 @@ public class CamillasController {
             } else {
                 camillaDB.setIdEnfermera(camilla.getIdEnfermera());
                 camillaDB.setIdPaciente(camilla.getIdPaciente());
+                camillaDB.setEstado(camilla.isEstado());
+                camillaDB.setIdIsla(camilla.getIdIsla());
+                camillaDB.setIdSala(camilla.getIdSala());
                 camillasRepository.save(camillaDB);
                 response.setError(false);
                 response.setStatusCode(200);
@@ -164,7 +167,7 @@ public class CamillasController {
                 response.setError(false);
                 response.setStatusCode(200);
                 response.setMessage("Camilla eliminada correctamente");
-                response.setData(null);
+                response.setData(camilla);
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
