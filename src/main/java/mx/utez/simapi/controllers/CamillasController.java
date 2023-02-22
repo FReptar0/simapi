@@ -29,7 +29,6 @@ public class CamillasController {
     @PostMapping
     public ResponseEntity<CustomResponse<Camillas>> createCamilla(@RequestBody Camillas camilla) {
         CustomResponse<Camillas> response = new CustomResponse<Camillas>();
-        System.out.println(camilla.toString());
         try {
             if (camilla.getIdEnfermera() == null
                     || camilla.getIdPaciente() == null) {
@@ -39,14 +38,12 @@ public class CamillasController {
                 response.setData(camilla);
             } else if (camilla.getIdCamilla() == null) {
                 camilla.setIdCamilla(UUIDGenerator.getId());
-                System.out.println(camilla.getIdCamilla());
                 camillasRepository.save(camilla);
                 response.setError(false);
                 response.setStatusCode(200);
                 response.setMessage("Camilla creada correctamente");
                 response.setData(camilla); // invertir con el de arriba
             } else if (camilla.getIdCamilla() != null) {
-                System.out.println("idCamilla no puede ser aplicado");
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("Camilla no creada, idCamilla no puede ser aplicado");

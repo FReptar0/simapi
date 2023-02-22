@@ -44,7 +44,7 @@ public class AdministradorController {
                 response.setStatusCode(400);
                 response.setMessage("El administrador ya existe");
                 response.setData(adminToCreate);
-            }else if(admin.getIdAdministrador() != null){
+            } else if (admin.getIdAdministrador() != null) {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("No se puede crear un administrador con id");
@@ -52,7 +52,6 @@ public class AdministradorController {
             } else {
                 if (EmailValidator.validation(admin.getCorreo())) {
                     admin.setIdAdministrador(UUIDGenerator.getId());
-                    System.out.println(admin.getIdAdministrador());
                     administradoresRepository.save(admin);
                     response.setError(false);
                     response.setStatusCode(200);
@@ -71,7 +70,6 @@ public class AdministradorController {
             response.setStatusCode(400);
             response.setMessage(CustomHandlerException.handleException(e) + "\nError al crear administrador");
             response.setData(null);
-            System.out.println("Error: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
