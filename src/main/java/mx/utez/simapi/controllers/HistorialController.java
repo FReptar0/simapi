@@ -30,12 +30,29 @@ public class HistorialController {
     public ResponseEntity<CustomResponse<Historial>> createHistorial(@RequestBody Historial historial) {
         CustomResponse<Historial> response = new CustomResponse<Historial>();
         try {
-            historial.setIdHistorial(UUIDGenerator.getId());
-            historialRepository.save(historial);
-            response.setError(false);
-            response.setStatusCode(200);
-            response.setMessage("Historial creado correctamente");
-            response.setData(historial);
+            if (historial == null) {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("Historial no creado, datos incompletos");
+                response.setData(historial);
+            } else if ((historial.getFechaPeticion() == null || historial.getHoraDePeticion() == null
+                    || historial.getFechaAtencion() == null || historial.getHoraDeAtencion() == null
+                    || historial.getFechaAtencion() == null || historial.getIdPaciente() == null
+                    || historial.getIdEnfermera() == null || historial.getIdCamilla() == null
+                    || historial.getIdIsla() == null || historial.getIdSala() == null)
+                    && historial.getIdHistorial() == null) {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("Historial no creado, datos incompletos");
+                response.setData(historial);
+            } else {
+                historial.setIdHistorial(UUIDGenerator.getId());
+                historialRepository.save(historial);
+                response.setError(false);
+                response.setStatusCode(200);
+                response.setMessage("Historial creado correctamente");
+                response.setData(historial);
+            }
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.setError(true);

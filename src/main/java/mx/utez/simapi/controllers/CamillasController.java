@@ -31,8 +31,8 @@ public class CamillasController {
         CustomResponse<Camillas> response = new CustomResponse<Camillas>();
         System.out.println(camilla.toString());
         try {
-            if (camilla.getIdEnfermera().isEmpty()
-                    || camilla.getIdPaciente().isEmpty()) {
+            if (camilla.getIdEnfermera() == null
+                    || camilla.getIdPaciente() == null) {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("Camilla no creada, datos incompletos");
@@ -45,7 +45,7 @@ public class CamillasController {
                 response.setStatusCode(200);
                 response.setMessage("Camilla creada correctamente");
                 response.setData(camilla); // invertir con el de arriba
-            } else if (!camilla.getIdCamilla().isEmpty()) {
+            } else if (camilla.getIdCamilla() != null) {
                 System.out.println("idCamilla no puede ser aplicado");
                 response.setError(true);
                 response.setStatusCode(400);
@@ -72,7 +72,7 @@ public class CamillasController {
         CustomResponse<List<Camillas>> response = new CustomResponse<List<Camillas>>();
         try {
             List<Camillas> camillas = camillasRepository.findAll();
-            if (camillas.isEmpty()) {
+            if (camillas == null) {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("No hay camillas registradas");
