@@ -29,24 +29,21 @@ public class CamillasController {
     @PostMapping
     public ResponseEntity<CustomResponse<Camillas>> createCamilla(@RequestBody Camillas camilla) {
         CustomResponse<Camillas> response = new CustomResponse<Camillas>();
-        System.out.println(camilla.toString());
         try {
-            if (camilla.getIdEnfermera().isEmpty()
-                    || camilla.getIdPaciente().isEmpty()) {
+            if (camilla.getIdEnfermera() == null
+                    || camilla.getIdPaciente() == null) {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("Camilla no creada, datos incompletos");
                 response.setData(camilla);
             } else if (camilla.getIdCamilla() == null) {
                 camilla.setIdCamilla(UUIDGenerator.getId());
-                System.out.println(camilla.getIdCamilla());
                 camillasRepository.save(camilla);
                 response.setError(false);
                 response.setStatusCode(200);
                 response.setMessage("Camilla creada correctamente");
                 response.setData(camilla); // invertir con el de arriba
-            } else if (!camilla.getIdCamilla().isEmpty()) {
-                System.out.println("idCamilla no puede ser aplicado");
+            } else if (camilla.getIdCamilla() != null) {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("Camilla no creada, idCamilla no puede ser aplicado");
@@ -72,7 +69,7 @@ public class CamillasController {
         CustomResponse<List<Camillas>> response = new CustomResponse<List<Camillas>>();
         try {
             List<Camillas> camillas = camillasRepository.findAll();
-            if (camillas.isEmpty()) {
+            if (camillas == null) {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("No hay camillas registradas");
@@ -133,6 +130,9 @@ public class CamillasController {
             } else {
                 camillaDB.setIdEnfermera(camilla.getIdEnfermera());
                 camillaDB.setIdPaciente(camilla.getIdPaciente());
+                camillaDB.setEstado(camilla.isEstado());
+                camillaDB.setIdIsla(camilla.getIdIsla());
+                camillaDB.setIdSala(camilla.getIdSala());
                 camillasRepository.save(camillaDB);
                 response.setError(false);
                 response.setStatusCode(200);
@@ -164,7 +164,7 @@ public class CamillasController {
                 response.setError(false);
                 response.setStatusCode(200);
                 response.setMessage("Camilla eliminada correctamente");
-                response.setData(null);
+                response.setData(camilla);
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {

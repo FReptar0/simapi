@@ -31,11 +31,10 @@ public class AdministradorController {
     @PostMapping
     public ResponseEntity<CustomResponse<Administradores>> createAdministrador(@RequestBody Administradores admin) {
         CustomResponse<Administradores> response = new CustomResponse<Administradores>();
-        // buscar si existe el administrador
         Administradores adminToCreate = administradoresRepository.findByCorreo(admin.getCorreo());
         try {
-            if (admin.getApellidos().isEmpty() || admin.getNombre().isEmpty() || admin.getCorreo().isEmpty()
-                    || admin.getContrasena().isEmpty() || admin.getRol().isEmpty()) {
+            if (admin.getApellidos() == null || admin.getNombre() == null || admin.getCorreo() == null
+                    || admin.getContrasena() == null || admin.getRol() == null) {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("Verifica que todos los campos esten llenos");
@@ -45,10 +44,14 @@ public class AdministradorController {
                 response.setStatusCode(400);
                 response.setMessage("El administrador ya existe");
                 response.setData(adminToCreate);
+            } else if (admin.getIdAdministrador() != null) {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("No se puede crear un administrador con id");
+                response.setData(admin);
             } else {
                 if (EmailValidator.validation(admin.getCorreo())) {
                     admin.setIdAdministrador(UUIDGenerator.getId());
-                    System.out.println(admin.getIdAdministrador());
                     administradoresRepository.save(admin);
                     response.setError(false);
                     response.setStatusCode(200);
@@ -67,7 +70,6 @@ public class AdministradorController {
             response.setStatusCode(400);
             response.setMessage(CustomHandlerException.handleException(e) + "\nError al crear administrador");
             response.setData(null);
-            System.out.println("Error: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -76,7 +78,7 @@ public class AdministradorController {
     public ResponseEntity<CustomResponse<List<Administradores>>> getAdministradores() {
         CustomResponse<List<Administradores>> response = new CustomResponse<List<Administradores>>();
         try {
-            if (administradoresRepository.findAll().isEmpty()) {
+            if (administradoresRepository.findAll() == null) {
                 response.setError(false);
                 response.setStatusCode(200);
                 response.setMessage("Error al obtener administradores");
@@ -135,24 +137,45 @@ public class AdministradorController {
                 response.setMessage("Administrador no encontrado");
                 response.setData(adminToUpdate);
             } else {
-                if (admin.getApellidos().isEmpty() || admin.getNombre().isEmpty() || admin.getCorreo().isEmpty()
-                        || admin.getContrasena().isEmpty() || admin.getRol().isEmpty()) {
+                if (admin.getApellidos() == null || admin.getNombre() == null || admin.getCorreo() == null
+                        || admin.getContrasena() == null || admin.getRol() == null) {
                     response.setError(true);
                     response.setStatusCode(400);
                     response.setMessage("Verifica que todos los campos esten llenos");
                     response.setData(admin);
                 } else {
                     if (EmailValidator.validation(admin.getCorreo())) {
-                        adminToUpdate.setApellidos(admin.getApellidos());
-                        adminToUpdate.setNombre(admin.getNombre());
-                        adminToUpdate.setCorreo(admin.getCorreo());
-                        adminToUpdate.setContrasena(admin.getContrasena());
-                        adminToUpdate.setRol(admin.getRol());
-                        administradoresRepository.save(adminToUpdate);
-                        response.setError(false);
-                        response.setStatusCode(200);
-                        response.setMessage("Administrador actualizado correctamente");
-                        response.setData(adminToUpdate);
+                        Administradores adminUpdate = administradoresRepository.findByCorreo(admin.getCorreo());
+                        if (adminUpdate != null) {
+                            if (adminUpdate.getIdAdministrador().equals(adminToUpdate.getIdAdministrador())) {
+                                adminToUpdate.setApellidos(admin.getApellidos());
+                                adminToUpdate.setNombre(admin.getNombre());
+                                adminToUpdate.setCorreo(admin.getCorreo());
+                                adminToUpdate.setContrasena(admin.getContrasena());
+                                adminToUpdate.setRol(admin.getRol());
+                                administradoresRepository.save(adminToUpdate);
+                                response.setError(false);
+                                response.setStatusCode(200);
+                                response.setMessage("Administrador actualizado correctamente");
+                                response.setData(adminToUpdate);
+                            } else {
+                                response.setError(true);
+                                response.setStatusCode(400);
+                                response.setMessage("El correo ya esta en uso");
+                                response.setData(admin);
+                            }
+                        } else {
+                            adminToUpdate.setApellidos(admin.getApellidos());
+                            adminToUpdate.setNombre(admin.getNombre());
+                            adminToUpdate.setCorreo(admin.getCorreo());
+                            adminToUpdate.setContrasena(admin.getContrasena());
+                            adminToUpdate.setRol(admin.getRol());
+                            administradoresRepository.save(adminToUpdate);
+                            response.setError(false);
+                            response.setStatusCode(200);
+                            response.setMessage("Administrador actualizado correctamente");
+                            response.setData(adminToUpdate);
+                        }
                     } else {
                         response.setError(true);
                         response.setStatusCode(400);
