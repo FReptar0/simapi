@@ -46,6 +46,7 @@ public class IslasController {
                 response.setData(isla);
             } else {
                 isla.setIdIsla(UUIDGenerator.getId());
+                islasRepository.save(isla);
                 response.setError(false);
                 response.setStatusCode(200);
                 response.setMessage("La isla creada correctamente");
@@ -127,22 +128,33 @@ public class IslasController {
                 response.setMessage("Isla no encontrada");
                 response.setData(null);
             } else {
-                islaToUpdate.setNumeroDeIsla(isla.getNumeroDeIsla());
-                islaToUpdate.setIdEnfermeraResponsable(isla.getIdEnfermeraResponsable());
-                islaToUpdate.setIdJefeDeEnfermeria(isla.getIdJefeDeEnfermeria());
-                islaToUpdate.setIdSala(isla.getIdSala());
-                islaToUpdate.setEstado(isla.isEstado());
-                islasRepository.save(islaToUpdate);
-                response.setError(false);
-                response.setStatusCode(200);
-                response.setMessage("Isla actualizada correctamente");
-                response.setData(islaToUpdate);
+                //String numeroDeIsla = isla.getNumeroDeIsla();
+                Islas islaTemp =  islasRepository.findByNumeroDeIsla(isla.getNumeroDeIsla());
+                //System.out.println(islaTemp);
+                if(islaTemp != null){
+                    response.setError(true);
+                    response.setStatusCode(400);
+                    response.setMessage("El numero de isla ya existe");
+                    response.setData(null);
+                } else {  
+                    islaToUpdate.setNumeroDeIsla(isla.getNumeroDeIsla());
+                    islaToUpdate.setIdEnfermeraResponsable(isla.getIdEnfermeraResponsable());
+                    islaToUpdate.setIdJefeDeEnfermeria(isla.getIdJefeDeEnfermeria());
+                    islaToUpdate.setIdSala(isla.getIdSala());
+                    islaToUpdate.setEstado(isla.isEstado());
+                    islasRepository.save(islaToUpdate);
+                    response.setError(false);
+                    response.setStatusCode(200);
+                    response.setMessage("Isla actualizada correctamente");
+                    response.setData(islaToUpdate);
+                }
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.setError(true);
             response.setStatusCode(400);
             response.setMessage(CustomHandlerException.handleException(e) + "\nError al actualizar isla");
+            //response.setMessage(""+e);
             response.setData(null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
