@@ -34,17 +34,11 @@ public class PacientesController {
     public ResponseEntity<CustomResponse<Pacientes>> createPatient(@RequestBody Pacientes patient) {
         CustomResponse<Pacientes> response = new CustomResponse<Pacientes>();
         try {
-            if (patient.getNombre().isEmpty() || patient.getApellidos().isEmpty()
-                    || patient.getDescripcion().isEmpty()) {
+            if (patient.getNombre()== null || patient.getApellidos()== null 
+                    || patient.getDescripcion()== null || patient.getExpediente()== null ) {
                 response.setError(true);// error = true
-                response.setStatusCode(400);
+                response.setStatusCode(200);
                 response.setMessage("Verifica que los campos estén llenos");
-                response.setData(patient);
-            } else if (!patient.getIdPaciente().isEmpty()) {
-                System.out.println("idPaciente no puede ser aplicado");
-                response.setError(true);
-                response.setStatusCode(400);
-                response.setMessage("Paciente no creado, idPaciente no puede ser aplicado");
                 response.setData(patient);
             } else if (patient.getIdPaciente() == null) {
                 patient.setIdPaciente(UUIDGenerator.getId());
@@ -55,8 +49,8 @@ public class PacientesController {
                 response.setData(patient);
             } else {
                 response.setError(true);
-                response.setStatusCode(400);
-                response.setMessage("Paciente no creado");
+                response.setStatusCode(200);
+                response.setMessage("Paciente no creado porque ya existe ");
                 response.setData(patient);
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -77,7 +71,7 @@ public class PacientesController {
             List<Pacientes> paciente = pacientesRepository.findAll();// findAll() es un metodo de MongoRepository
             if (paciente.isEmpty()) {
                 response.setError(true);
-                response.setStatusCode(400);
+                response.setStatusCode(200);
                 response.setMessage("No hay pacientes registrados");
                 response.setData(null);
             } else {
@@ -101,11 +95,10 @@ public class PacientesController {
     public ResponseEntity<CustomResponse<Pacientes>> getPacienteById(@PathVariable String idPaciente) {
         CustomResponse<Pacientes> response = new CustomResponse<Pacientes>();
         try {
-            Pacientes paciente = pacientesRepository.findById(idPaciente).orElse(null);// Para obtener un paciente por
-                                                                                       // su id
+            Pacientes paciente = pacientesRepository.findById(idPaciente).orElse(null);// Para obtener un paciente por su id
             if (paciente == null) {
                 response.setError(true);
-                response.setStatusCode(400);
+                response.setStatusCode(200);
                 response.setMessage("Paciente no encontrado");
                 response.setData(null);
             } else {
@@ -133,13 +126,14 @@ public class PacientesController {
             Pacientes pacienteUpdate = pacientesRepository.findById(idPaciente).orElse(null);
             if (pacienteUpdate == null) {
                 response.setError(true);
-                response.setStatusCode(400);
+                response.setStatusCode(200);
                 response.setMessage(idPaciente + " no encontrado");
                 response.setData(null);
             } else {
                 pacienteUpdate.setNombre(paciente.getNombre());
                 pacienteUpdate.setApellidos(paciente.getApellidos());
                 pacienteUpdate.setDescripcion(paciente.getApellidos());
+                pacienteUpdate.setExpediente(paciente.getExpediente());
                 pacientesRepository.save(pacienteUpdate);
                 response.setError(false);
                 response.setStatusCode(200);
@@ -164,10 +158,11 @@ public class PacientesController {
             Pacientes paciente = pacientesRepository.findById(idPaciente).orElse(null);
             if (paciente == null) {
                 response.setError(true);
-                response.setStatusCode(400);
+                response.setStatusCode(200);
                 response.setMessage("Paciente no encontrado");
                 response.setData(null);
             } else {
+                pacientesRepository.delete(paciente);
                 response.setError(false);
                 response.setStatusCode(200);
                 response.setMessage("Paciente eliminado correctamente");

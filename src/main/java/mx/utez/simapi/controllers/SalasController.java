@@ -29,8 +29,8 @@ public class SalasController {
     public ResponseEntity<CustomResponse<Salas>> createSala(@RequestBody Salas sala){
         CustomResponse<Salas> response = new CustomResponse<Salas>();
         try{
-            if(sala.getNumeroDeSala().isEmpty() || sala.getCantidadDeCamillas().isEmpty() || 
-            sala.getIdJefeDeEnfermeria().isEmpty() || sala.getIdEnfermeraResponsable().isEmpty()){
+            if(sala.getNumeroDeSala()== null  || sala.getCantidadDeCamillas()== null  || 
+            sala.getIdJefeDeEnfermeria() == null || sala.getIdEnfermeraResponsable()== null  || !sala.isEstado()){
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("Verifica que los campos estén llenos");
@@ -42,15 +42,10 @@ public class SalasController {
                 response.setStatusCode(200);
                 response.setMessage("Sala creada correctamente");
                 response.setData(sala);
-            }else if (sala.getIdSala() != null){
+            }else{
                 response.setError(true);
-                response.setStatusCode(400);
+                response.setStatusCode(200);
                 response.setMessage("Sala ya existe");
-                response.setData(sala);
-            }else {
-                response.setError(true);
-                response.setStatusCode(400);
-                response.setMessage("Sala no creada");
                 response.setData(sala);
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -70,7 +65,7 @@ public class SalasController {
             List<Salas> sala = salasRepository.findAll();
             if(sala.isEmpty()){
                 response.setError(true);
-                response.setStatusCode(400);
+                response.setStatusCode(200);
                 response.setMessage("No hay salas registradas");
                 response.setData(null);
             }else{
@@ -98,7 +93,7 @@ public class SalasController {
             Salas sala = salasRepository.findById(idSala).orElse(null);
             if(sala == null){
                 response.setError(true);
-                response.setStatusCode(400);
+                response.setStatusCode(200);
                 response.setMessage("Sala no encontrada");
                 response.setData(null);
             }else{
@@ -126,7 +121,7 @@ public class SalasController {
             Salas salaUpdate = salasRepository.findById(idSala).orElse(null);
             if(salaUpdate == null){
                 response.setError(true);
-                response.setStatusCode(400);
+                response.setStatusCode(200);
                 response.setMessage("Sala no encontrada");
                 response.setData(null);
             }else{
@@ -134,6 +129,7 @@ public class SalasController {
                 salaUpdate.setCantidadDeCamillas(sala.getCantidadDeCamillas());
                 salaUpdate.setIdJefeDeEnfermeria(sala.getIdJefeDeEnfermeria());
                 salaUpdate.setIdEnfermeraResponsable(sala.getIdEnfermeraResponsable());
+                salaUpdate.setEstado(sala.isEstado());
                 salasRepository.save(salaUpdate);
                 response.setError(false);
                 response.setStatusCode(200);
@@ -159,7 +155,7 @@ public class SalasController {
             Salas sala = salasRepository.findById(idSala).orElse(null);
             if( sala == null){
                 response.setError(true);
-                response.setStatusCode(400);
+                response.setStatusCode(200);
                 response.setMessage("Sala no encontrada");
                 response.setData(null);
             }else{
