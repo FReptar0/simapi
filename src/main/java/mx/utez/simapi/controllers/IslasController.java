@@ -33,8 +33,8 @@ public class IslasController {
         //Buscar si existe la isla
         Islas islaToCreate = islasRepository.findByNumeroDeIsla(isla.getNumeroDeIsla());
         try{
-            if (isla.getNumeroDeIsla().isEmpty() || isla.getIdEnfermeraResponsable().isEmpty() || isla.getIdJefeDeEnfermeria().isEmpty()
-            || isla.getIdSala().isEmpty()) {
+            if (isla.getNumeroDeIsla() == null || isla.getIdEnfermeraResponsable() == null || isla.getIdJefeDeEnfermeria() == null
+            || isla.getIdSala() == null) {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("Verifica que todos los campos esten llenos");
@@ -68,7 +68,7 @@ public class IslasController {
         CustomResponse<List<Islas>> response = new CustomResponse<>();
         try{
             List<Islas> islas = islasRepository.findAll();
-            if (islas.isEmpty()) {
+            if (islas == null) {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("No hay islas registradas");
