@@ -1,5 +1,5 @@
 package mx.utez.simapi.models;
 
-public class Colores {
+public class Institucion {
     
 }
