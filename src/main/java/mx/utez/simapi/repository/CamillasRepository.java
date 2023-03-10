@@ -4,6 +4,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import mx.utez.simapi.models.Camillas;
 
-public interface CamillasRepository extends MongoRepository<Camillas, String>{
+public interface CamillasRepository extends MongoRepository<Camillas, String> {
     
 }

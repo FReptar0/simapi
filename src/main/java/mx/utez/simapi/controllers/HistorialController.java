@@ -38,8 +38,7 @@ public class HistorialController {
             } else if ((historial.getFechaPeticion() == null || historial.getHoraDePeticion() == null
                     || historial.getFechaAtencion() == null || historial.getHoraDeAtencion() == null
                     || historial.getFechaAtencion() == null || historial.getIdPaciente() == null
-                    || historial.getIdEnfermera() == null || historial.getIdCamilla() == null
-                    || historial.getIdIsla() == null || historial.getIdSala() == null)
+                    || historial.getIdEnfermera() == null || historial.getIdCamilla() == null)
                     && historial.getIdHistorial() == null) {
                 response.setError(true);
                 response.setStatusCode(400);
@@ -116,8 +115,6 @@ public class HistorialController {
                 historialToUpdate.setIdPaciente(historial.getIdPaciente());
                 historialToUpdate.setIdEnfermera(historial.getIdEnfermera());
                 historialToUpdate.setIdCamilla(historial.getIdCamilla());
-                historialToUpdate.setIdIsla(historial.getIdIsla());
-                historialToUpdate.setIdSala(historial.getIdSala());
                 historialRepository.save(historialToUpdate);
                 response.setError(false);
                 response.setStatusCode(200);
