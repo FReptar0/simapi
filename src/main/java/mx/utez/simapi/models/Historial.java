@@ -15,7 +15,6 @@ public class Historial {
     private String horaDePeticion;
     private String fechaAtencion;
     private String horaDeAtencion;
-    private String comentario;
     private String idPaciente;
     private String idEnfermera;
     private String idCamilla;

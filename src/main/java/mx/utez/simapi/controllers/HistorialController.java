@@ -20,7 +20,7 @@ import mx.utez.simapi.utils.CustomResponse;
 import mx.utez.simapi.utils.UUIDGenerator;
 
 @RestController
-@RequestMapping("/historial")
+@RequestMapping("/api/historial")
 public class HistorialController {
 
     @Autowired
@@ -111,7 +111,6 @@ public class HistorialController {
                 historialToUpdate.setHoraDePeticion(historial.getHoraDePeticion());
                 historialToUpdate.setFechaAtencion(historial.getFechaAtencion());
                 historialToUpdate.setHoraDeAtencion(historial.getHoraDeAtencion());
-                historialToUpdate.setComentario(historial.getComentario());
                 historialToUpdate.setIdPaciente(historial.getIdPaciente());
                 historialToUpdate.setIdEnfermera(historial.getIdEnfermera());
                 historialToUpdate.setIdCamilla(historial.getIdCamilla());
