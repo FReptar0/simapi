@@ -20,7 +20,6 @@ import mx.utez.simapi.models.Institucion;
 import mx.utez.simapi.repository.InstitucionRepository;
 import mx.utez.simapi.utils.CustomHandlerException;
 import mx.utez.simapi.utils.CustomResponse;
-import mx.utez.simapi.utils.HashedPass;
 import mx.utez.simapi.utils.UUIDGenerator;
 
 @RestController

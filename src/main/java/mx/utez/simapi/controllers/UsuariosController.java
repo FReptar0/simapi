@@ -27,7 +27,6 @@ import mx.utez.simapi.repository.UsuariosRepository;
 import mx.utez.simapi.security.jwt.JwtProvider;
 import mx.utez.simapi.utils.CustomHandlerException;
 import mx.utez.simapi.utils.CustomResponse;
-import mx.utez.simapi.utils.HashedPass;
 import mx.utez.simapi.utils.UUIDGenerator;
 
 @RestController

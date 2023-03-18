@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import mx.utez.simapi.controllers.UsuariosController;
 import mx.utez.simapi.models.JwtToken;
 import mx.utez.simapi.models.UsuarioLogin;
-import mx.utez.simapi.repository.UsuariosRepository;
 import mx.utez.simapi.utils.CustomResponse;
 
 @RestController
