@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,9 @@ import mx.utez.simapi.utils.UUIDGenerator;
 public class InstitucionController {
     @Autowired
     private InstitucionRepository institucionRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @PostMapping
     public ResponseEntity<CustomResponse<Institucion>> createInstitucion(@RequestBody Institucion institucion) {
@@ -58,7 +62,7 @@ public class InstitucionController {
                     response.setData(institucion);
                 } else {
                     institucion.setIdInstitucion(UUIDGenerator.getId());
-                    institucion.setPassword(HashedPass.passwordEncoder().encode(institucion.getPassword()));
+                    institucion.setPassword(passwordEncoder.encode(institucion.getPassword()));
                     institucionRepository.save(institucion);
                     response.setError(false);
                     response.setStatusCode(200);
@@ -142,7 +146,7 @@ public class InstitucionController {
             } else {
                 institucionDB.setNombre(institucion.getNombre());
                 institucionDB.setCorreo(institucion.getCorreo());
-                institucionDB.setPassword(HashedPass.passwordEncoder().encode(institucion.getPassword()));
+                institucionDB.setPassword(passwordEncoder.encode(institucion.getPassword()));
                 institucionDB.setLogo(institucion.getLogo());
                 institucionDB.setCantidadCamillas(institucion.getCantidadCamillas());
                 institucionDB.setCantidadDeSalas(institucion.getCantidadDeSalas());

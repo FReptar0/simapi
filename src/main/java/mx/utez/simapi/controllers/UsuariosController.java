@@ -5,6 +5,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,8 +20,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import mx.utez.simapi.models.JwtToken;
+import mx.utez.simapi.models.UsuarioLogin;
 import mx.utez.simapi.models.Usuarios;
 import mx.utez.simapi.repository.UsuariosRepository;
+import mx.utez.simapi.security.jwt.JwtProvider;
 import mx.utez.simapi.utils.CustomHandlerException;
 import mx.utez.simapi.utils.CustomResponse;
 import mx.utez.simapi.utils.HashedPass;
@@ -26,6 +35,15 @@ import mx.utez.simapi.utils.UUIDGenerator;
 public class UsuariosController {
     @Autowired
     private UsuariosRepository usuariosRepository;
+
+    @Autowired
+    JwtProvider jwtProvider;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @PostMapping
     public ResponseEntity<CustomResponse<Usuarios>> save(@RequestBody Usuarios usuario) {
@@ -44,13 +62,27 @@ public class UsuariosController {
                 response.setMessage("Usuario no creado, datos incompletos");
                 response.setData(usuario);
             } else {
-                usuario.setIdUsuario(UUIDGenerator.getId());
-                usuario.setPassword(HashedPass.passwordEncoder().encode(usuario.getPassword()));
-                usuariosRepository.save(usuario);
-                response.setError(false);
-                response.setStatusCode(200);
-                response.setMessage("Usuario creado");
-                response.setData(usuario);
+                if (usuario.getRol() == "SA" || usuario.getRol() == "E" || usuario.getRol() == "A") {
+                    if (usuario.getRol() == "SA" && usuariosRepository.countSA() > 0) {
+                        response.setError(true);
+                        response.setStatusCode(400);
+                        response.setMessage("Usuario no creado, rol SA ya existente");
+                        response.setData(usuario);
+                    } else {
+                        usuario.setIdUsuario(UUIDGenerator.getId());
+                        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+                        usuarioDB = usuariosRepository.save(usuario);
+                        response.setError(false);
+                        response.setStatusCode(200);
+                        response.setMessage("Usuario creado correctamente");
+                        response.setData(usuarioDB);
+                    }
+                } else {
+                    response.setError(true);
+                    response.setStatusCode(400);
+                    response.setMessage("Usuario no creado, rol no valido");
+                    response.setData(usuario);
+                }
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -105,7 +137,8 @@ public class UsuariosController {
     }
 
     @PutMapping("/{idUsuario}")
-    public ResponseEntity<CustomResponse<Usuarios>> update(@PathVariable String idUsuario, @RequestBody Usuarios usuario) {
+    public ResponseEntity<CustomResponse<Usuarios>> update(@PathVariable String idUsuario,
+            @RequestBody Usuarios usuario) {
         CustomResponse<Usuarios> response = new CustomResponse<>();
         try {
             Usuarios usuarioDB = usuariosRepository.findById(idUsuario).orElse(null);
@@ -120,17 +153,24 @@ public class UsuariosController {
                 response.setMessage("Usuario no actualizado, datos incompletos");
                 response.setData(usuario);
             } else {
-                usuarioDB.setNombre(usuario.getNombre());
-                usuarioDB.setApellidos(usuario.getApellidos());
-                usuarioDB.setCorreo(usuario.getCorreo());
-                usuarioDB.setPassword(HashedPass.passwordEncoder().encode(usuario.getPassword()));
-                usuarioDB.setRol(usuario.getRol());
-                usuarioDB.setIdInstitucion(usuario.getIdInstitucion());
-                usuariosRepository.save(usuarioDB);
-                response.setError(false);
-                response.setStatusCode(200);
-                response.setMessage("Usuario actualizado");
-                response.setData(usuarioDB);
+                if (usuario.getRol() == "SA" || usuario.getRol() == "E" || usuario.getRol() == "A") {
+                    if (usuario.getRol() == "SA" && usuariosRepository.countSA() > 0) {
+                        response.setError(true);
+                        response.setStatusCode(400);
+                        response.setMessage("Usuario no actualizado, rol SA ya existente");
+                        response.setData(usuario);
+                    } else {
+                        usuarioDB.setNombre(usuario.getNombre());
+                        usuarioDB.setCorreo(usuario.getCorreo());
+                        usuarioDB.setPassword(passwordEncoder.encode(usuario.getPassword()));
+                        usuarioDB.setRol(usuario.getRol());
+                        usuarioDB = usuariosRepository.save(usuarioDB);
+                        response.setError(false);
+                        response.setStatusCode(200);
+                        response.setMessage("Usuario actualizado correctamente");
+                        response.setData(usuarioDB);
+                    }
+                }
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -165,5 +205,26 @@ public class UsuariosController {
             response.setMessage(CustomHandlerException.handleException(e) + "\nError al eliminar usuario");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public JwtToken login(UsuarioLogin usuarioLogin) {
+        // Obtener usuario desde la base de datos usando correo
+        String correo = usuarioLogin.getCorreo();
+        Usuarios usuario = usuariosRepository.findByCorreo(correo);
+
+        // Comparar contraseñas hasheadas
+        String passwordHasheada = usuario.getPassword();
+        String passwordIngresada = usuarioLogin.getPassword();
+        if (!passwordEncoder.matches(passwordIngresada, passwordHasheada)) {
+            throw new BadCredentialsException("Credenciales inválidas");
+        }
+
+        // Hacer autenticación con Spring Security
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(correo, passwordIngresada));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtProvider.generateToken(authentication);
+        return new JwtToken(jwt);
+
     }
 }
