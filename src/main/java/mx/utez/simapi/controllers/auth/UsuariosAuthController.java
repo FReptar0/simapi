@@ -16,8 +16,8 @@ import mx.utez.simapi.models.UsuarioLogin;
 import mx.utez.simapi.utils.CustomResponse;
 
 @RestController
-@RequestMapping("/api/auth/admin")
-public class AdminAuthController {
+@RequestMapping("/api/auth")
+public class UsuariosAuthController {
 
     @Autowired
     UsuariosController usuariosController;

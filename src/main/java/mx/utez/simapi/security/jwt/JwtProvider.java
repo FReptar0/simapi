@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import mx.utez.simapi.models.UserDetailImpl;
 
@@ -32,7 +32,7 @@ public class JwtProvider {
                 .signWith(getKey(secret))
                 .setSubject(userDetail.getUsername())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + expiration))
+                .setExpiration(new Date(new Date().getTime() + expiration + 1000 * 60 * 60 * 24))
                 .compact();
     }
 
@@ -69,6 +69,7 @@ public class JwtProvider {
     }
 
     private Key getKey(String secret) {
-        return Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        byte[] apiKeySecretBytes = Decoders.BASE64.decode(secret);
+        return Keys.hmacShaKeyFor(apiKeySecretBytes);
     }
 }

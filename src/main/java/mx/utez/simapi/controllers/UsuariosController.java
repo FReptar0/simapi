@@ -10,6 +10,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,14 +55,16 @@ public class UsuariosController {
                 response.setStatusCode(400);
                 response.setMessage("Usuario no creado, correo ya existente");
                 response.setData(usuario);
-            } else if ((usuario.getNombre() == null || usuario.getCorreo() == null || usuario.getPassword() == null)
+            } else if ((usuario.getNombre() == null || usuario.getApellidos() == null || usuario.getCorreo() == null
+                    || usuario.getPassword() == null
+                    || usuario.getRol() == null)
                     && usuario.getIdUsuario() == null) {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("Usuario no creado, datos incompletos");
                 response.setData(usuario);
             } else {
-                if (usuario.getRol() == "SA" || usuario.getRol() == "E" || usuario.getRol() == "A") {
+                if (usuario.getRol().equals("SA") || usuario.getRol().equals("E") || usuario.getRol().equals("A")) {
                     if (usuario.getRol() == "SA" && usuariosRepository.countSA() > 0) {
                         response.setError(true);
                         response.setStatusCode(400);
@@ -74,6 +77,7 @@ public class UsuariosController {
                         response.setError(false);
                         response.setStatusCode(200);
                         response.setMessage("Usuario creado correctamente");
+                        usuarioDB.setPassword(null);
                         response.setData(usuarioDB);
                     }
                 } else {
@@ -100,6 +104,9 @@ public class UsuariosController {
             response.setError(false);
             response.setStatusCode(200);
             response.setMessage("Usuarios obtenidos correctamente");
+            for (Usuarios usuario : usuarios) {
+                usuario.setPassword(null);
+            }
             response.setData(usuarios);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -124,6 +131,7 @@ public class UsuariosController {
                 response.setError(false);
                 response.setStatusCode(200);
                 response.setMessage("Usuario obtenido correctamente");
+                usuario.setPassword(null);
                 response.setData(usuario);
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -167,6 +175,7 @@ public class UsuariosController {
                         response.setError(false);
                         response.setStatusCode(200);
                         response.setMessage("Usuario actualizado correctamente");
+                        usuarioDB.setPassword(null);
                         response.setData(usuarioDB);
                     }
                 }
@@ -195,6 +204,7 @@ public class UsuariosController {
                 response.setError(false);
                 response.setStatusCode(200);
                 response.setMessage("Usuario eliminado");
+                usuarioDB.setPassword(null);
                 response.setData(usuarioDB);
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -211,19 +221,23 @@ public class UsuariosController {
         String correo = usuarioLogin.getCorreo();
         Usuarios usuario = usuariosRepository.findByCorreo(correo);
 
-        // Comparar contraseñas hasheadas
-        String passwordHasheada = usuario.getPassword();
-        String passwordIngresada = usuarioLogin.getPassword();
-        if (!passwordEncoder.matches(passwordIngresada, passwordHasheada)) {
-            throw new BadCredentialsException("Credenciales inválidas");
-        }
+        if (usuario == null) {
+            throw new UsernameNotFoundException("Usuario no encontrado");
+        } else {
+            // Comparar contraseñas hasheadas
+            String passwordHasheada = usuario.getPassword();
+            String passwordIngresada = usuarioLogin.getPassword();
+            if (!passwordEncoder.matches(passwordIngresada, passwordHasheada)) {
+                throw new BadCredentialsException("Credenciales inválidas");
+            }
 
-        // Hacer autenticación con Spring Security
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(correo, passwordIngresada));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtProvider.generateToken(authentication);
-        return new JwtToken(jwt);
+            // Hacer autenticación con Spring Security
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(correo, passwordIngresada));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtProvider.generateToken(authentication);
+            return new JwtToken(jwt);
+        }
 
     }
 }
