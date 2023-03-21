@@ -22,7 +22,7 @@ import mx.utez.simapi.utils.UUIDGenerator;
 
 @RestController
 @RequestMapping("/api/colores")
-public class ColoresController {
+public class ColoresControler {
     
     @Autowired
     private ColoresRepository coloresRepository;
