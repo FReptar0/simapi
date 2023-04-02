@@ -13,4 +13,5 @@ public class Camillas {
     private String idInstitucion;
     private String idEnfermera;
     private boolean estado;
+    private boolean estadoAlarma;
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import mx.utez.simapi.utils.UUIDGenerator;
 
 @RestController
 @RequestMapping("/api/camillas")
+@CrossOrigin(origins = "*") //darle acceso a todos los dominios para que puedan interactuar con el api
 public class CamillasController {
     @Autowired
     private CamillasRepository camillasRepository;
@@ -44,12 +46,12 @@ public class CamillasController {
                 response.setData(camilla);
             } else {
                 if (camilla.getIdCamillas() != null) {
-                    camillasRepository.save(camilla);
                     response.setError(true);
                     response.setStatusCode(400);
                     response.setMessage("Camilla no creada, idCamillas no debe ser enviado");
                 } else {
                     camilla.setIdCamillas(UUIDGenerator.getId());
+                    camilla.setEstadoAlarma(false);
                     camillasRepository.save(camilla);
                     response.setError(false);
                     response.setStatusCode(200);
@@ -138,7 +140,6 @@ public class CamillasController {
                 response.setData(camilla);
             } else {
                 if (camilla.getIdCamillas() != null) {
-                    camillasRepository.save(camilla);
                     response.setError(true);
                     response.setStatusCode(400);
                     response.setMessage("Camilla no actualizada, idCamillas no debe ser enviado");
