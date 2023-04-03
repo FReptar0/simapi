@@ -42,7 +42,8 @@ public class InstitucionController {
                 response.setData(institucion);
             } else if ((institucion.getNombre() == null || institucion.getCorreo() == null
                     || institucion.getPassword() == null || institucion.getLogo() == null
-                    || institucion.getCantidadCamillas() == 0 || institucion.getCantidadDeSalas() == 0)
+                    || institucion.getCantidadCamillas() == 0 || institucion.getCantidadDeSalas() == 0
+                    || institucion.getCantidadDeIslas() == 0)
                     && institucion.getIdInstitucion() == null) {
                 response.setError(true);
                 response.setStatusCode(400);
@@ -60,13 +61,21 @@ public class InstitucionController {
                     response.setMessage("Institucion no creada, correo ya existente");
                     response.setData(institucion);
                 } else {
-                    institucion.setIdInstitucion(UUIDGenerator.getId());
-                    institucion.setPassword(passwordEncoder.encode(institucion.getPassword()));
-                    institucionRepository.save(institucion);
-                    response.setError(false);
-                    response.setStatusCode(200);
-                    response.setMessage("Institucion creada");
-                    response.setData(institucion);
+                    if ((institucion.getCantidadCamillas() % 10 == 0)
+                            && institucion.getCantidadDeIslas() < institucion.getCantidadDeSalas()) {
+                        institucion.setIdInstitucion(UUIDGenerator.getId());
+                        institucion.setPassword(passwordEncoder.encode(institucion.getPassword()));
+                        institucionRepository.save(institucion);
+                        response.setError(false);
+                        response.setStatusCode(200);
+                        response.setMessage("Institucion creada");
+                        response.setData(institucion);
+                    } else {
+                        response.setError(true);
+                        response.setStatusCode(400);
+                        response.setMessage("Institucion no creada, cantidad de camillas debe ser multiplo de 10");
+                        response.setData(institucion);
+                    }
                 }
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -142,18 +151,37 @@ public class InstitucionController {
                 response.setStatusCode(400);
                 response.setMessage("Institucion no encontrada");
                 response.setData(institucion);
+            } else if ((institucion.getNombre() != null || institucion.getCorreo() != null
+                    || institucion.getPassword() != null || institucion.getLogo() != null
+                    || institucion.getCantidadCamillas() != 0 || institucion.getCantidadDeSalas() != 0
+                    || institucion.getCantidadDeIslas() != 0)
+                    && idInstitucion != null) {
+                if ((institucion.getCantidadCamillas() % 10 == 0)
+                        && (institucion.getCantidadDeIslas() < institucion.getCantidadDeSalas())) {
+                    institucionDB.setNombre(institucion.getNombre());
+                    institucionDB.setCorreo(institucion.getCorreo());
+                    institucionDB.setPassword(passwordEncoder.encode(institucion.getPassword()));
+                    institucionDB.setLogo(institucion.getLogo());
+                    institucionDB.setCantidadCamillas(institucion.getCantidadCamillas());
+                    institucionDB.setCantidadDeSalas(institucion.getCantidadDeSalas());
+                    institucionDB.setCantidadDeIslas(institucion.getCantidadDeIslas());
+                    institucionDB.setCantidadCamillas(institucion.getCantidadCamillas());
+                    institucionRepository.save(institucionDB);
+                    response.setError(false);
+                    response.setStatusCode(200);
+                    response.setMessage("Institucion actualizada correctamente");
+                    response.setData(institucionDB);
+                } else {
+                    response.setError(true);
+                    response.setStatusCode(400);
+                    response.setMessage("Institucion no actualizada, cantidad de camillas debe ser multiplo de 10");
+                    response.setData(institucion);
+                }
             } else {
-                institucionDB.setNombre(institucion.getNombre());
-                institucionDB.setCorreo(institucion.getCorreo());
-                institucionDB.setPassword(passwordEncoder.encode(institucion.getPassword()));
-                institucionDB.setLogo(institucion.getLogo());
-                institucionDB.setCantidadCamillas(institucion.getCantidadCamillas());
-                institucionDB.setCantidadDeSalas(institucion.getCantidadDeSalas());
-                institucionRepository.save(institucionDB);
-                response.setError(false);
-                response.setStatusCode(200);
-                response.setMessage("Institucion actualizada correctamente");
-                response.setData(institucionDB);
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("Institucion no actualizada, verifique los datos");
+                response.setData(institucion);
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {

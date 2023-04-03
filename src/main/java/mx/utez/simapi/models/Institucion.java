@@ -16,4 +16,5 @@ public class Institucion {
     private String logo;
     private int cantidadCamillas;
     private int cantidadDeSalas;
+    private int cantidadDeIslas;
 }
