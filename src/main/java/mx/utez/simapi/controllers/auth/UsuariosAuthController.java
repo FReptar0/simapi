@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import mx.utez.simapi.controllers.UsuariosController;
 import mx.utez.simapi.models.JwtToken;
 import mx.utez.simapi.models.UsuarioLogin;
+import mx.utez.simapi.models.Usuarios;
+import mx.utez.simapi.repository.UsuariosRepository;
 import mx.utez.simapi.utils.CustomResponse;
 
 @RestController
@@ -26,6 +28,8 @@ public class UsuariosAuthController {
 
     @Autowired
     UsuariosController usuariosController;
+    @Autowired
+    UsuariosRepository usuariosRepository;
 
     @PostMapping("/login")
     public ResponseEntity<CustomResponse<Object>> login(@Valid @RequestBody UsuarioLogin usuarioLogin) {
@@ -34,6 +38,9 @@ public class UsuariosAuthController {
         try {
             JwtToken jwtToken = usuariosController.login(usuarioLogin);
             if (jwtToken != null) {
+
+                Usuarios usuario = usuariosRepository.findByCorreo(usuarioLogin.getCorreo());
+
                 response.setError(false);
                 response.setStatusCode(200);
                 response.setMessage("Login exitoso");
@@ -41,6 +48,10 @@ public class UsuariosAuthController {
                 Map<String, Object> jsonMap = new HashMap<>();
                 jsonMap.put("token", jwtToken.getToken());
                 jsonMap.put("correo", usuarioLogin.getCorreo());
+                jsonMap.put("nombre", usuario.getNombre());
+                jsonMap.put("apellidos", usuario.getApellidos());
+                jsonMap.put("idUsuario", usuario.getIdUsuario());
+                jsonMap.put("rol", usuario.getRol());
 
                 response.setData(jsonMap);
                 return new ResponseEntity<>(response, HttpStatus.OK);
