@@ -27,10 +27,12 @@ public class UsuariosFilterDataController {
         try {
             Usuarios user = usuariosRepository.fbyIdUsuarios(idUsuario);
             if (user != null) {
+                
                 Map<String, Object> jsonMap = new HashMap<>();
                 jsonMap.put("nombre", user.getNombre());
                 jsonMap.put("apellidos", user.getApellidos());
                 jsonMap.put("correo", user.getCorreo());
+
                 response.setError(false);
                 response.setStatusCode(200);
                 response.setMessage("Datos de filtro de usuarios");
