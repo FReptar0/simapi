@@ -1,5 +1,8 @@
 package mx.utez.simapi.controllers.auth;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +28,21 @@ public class UsuariosAuthController {
     UsuariosController usuariosController;
 
     @PostMapping("/login")
-    public ResponseEntity<CustomResponse<JwtToken>> login(@Valid @RequestBody UsuarioLogin usuarioLogin) {
+    public ResponseEntity<CustomResponse<Object>> login(@Valid @RequestBody UsuarioLogin usuarioLogin) {
         // Response
-        CustomResponse<JwtToken> response = new CustomResponse<>();
+        CustomResponse<Object> response = new CustomResponse<>();
         try {
             JwtToken jwtToken = usuariosController.login(usuarioLogin);
             if (jwtToken != null) {
                 response.setError(false);
                 response.setStatusCode(200);
                 response.setMessage("Login exitoso");
-                response.setData(jwtToken);
+
+                Map<String, Object> jsonMap = new HashMap<>();
+                jsonMap.put("token", jwtToken.getToken());
+                jsonMap.put("correo", usuarioLogin.getCorreo());
+
+                response.setData(jsonMap);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 response.setError(true);

@@ -9,6 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-public class JwtToken {
+public class JwtTokenResult {
     private String token;
+    private String correo;
 }
