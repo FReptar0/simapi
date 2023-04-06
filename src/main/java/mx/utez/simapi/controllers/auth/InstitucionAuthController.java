@@ -32,9 +32,6 @@ public class InstitucionAuthController {
 
     PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    @Value("${jwt.secret}")
-    private String secret;
-
     @PostMapping
     public ResponseEntity<CustomResponse<Object>> login(@RequestBody UsuarioLogin usuarioLogin) {
         Institucion usuario = institucionRepository.findByCorreo(usuarioLogin.getCorreo());
