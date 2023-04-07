@@ -147,23 +147,15 @@ public class UsuariosController {
     public ResponseEntity<CustomResponse<List<Usuarios>>> getByInstitucion(@PathVariable String idInstitucion) {
         CustomResponse<List<Usuarios>> response = new CustomResponse<>();
         try {
-            List<Usuarios> usuarios = usuariosRepository.findByInstitucion(idInstitucion);
-            if (usuarios == null) {
-                response.setError(true);
-                response.setStatusCode(400);
-                response.setMessage("Usuarios no encontrados");
-                response.setData(usuarios);
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-            } else {
-                response.setError(false);
-                response.setStatusCode(200);
-                response.setMessage("Usuarios obtenidos correctamente");
-                for (Usuarios usuario : usuarios) {
-                    usuario.setPassword(null);
-                }
-                response.setData(usuarios);
-                return new ResponseEntity<>(response, HttpStatus.OK);
+            List<Usuarios> usuarios = usuariosRepository.findByIdInstitucion(idInstitucion);
+            response.setError(false);
+            response.setStatusCode(200);
+            response.setMessage("Usuarios obtenidos correctamente");
+            for (Usuarios usuario : usuarios) {
+                usuario.setPassword(null);
             }
+            response.setData(usuarios);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.setStatusCode(500);
             response.setError(true);
