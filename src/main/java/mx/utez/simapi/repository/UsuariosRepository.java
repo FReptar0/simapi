@@ -8,7 +8,10 @@ import org.springframework.data.mongodb.repository.Query;
 import mx.utez.simapi.models.Usuarios;
 
 public interface UsuariosRepository extends MongoRepository<Usuarios, String> {
+    public List<Usuarios> findByIdInstitucion(String idInstitucion);
+
     public Usuarios findByCorreo(String correo);
+
     public Boolean existsByCorreo(String correo);
     public List<Usuarios> findByIdInstitucion(String idInstitucion);
 
