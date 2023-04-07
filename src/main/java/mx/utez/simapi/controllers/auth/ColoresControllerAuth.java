@@ -1,4 +1,4 @@
-package mx.utez.simapi.controllers;
+package mx.utez.simapi.controllers.auth;
 
 import java.util.List;
 
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,15 +20,14 @@ import mx.utez.simapi.utils.CustomHandlerException;
 import mx.utez.simapi.utils.CustomResponse;
 
 @RestController
-@RequestMapping("/api/colores")
+@RequestMapping("/api/auth/colores")
 @CrossOrigin(origins = "*") //darle acceso a todos los dominios para que puedan interactuar con el api
-public class ColoresControler {
+public class ColoresControllerAuth {
     
     @Autowired
     private ColoresRepository coloresRepository;
 
-    @PostMapping
-    public ResponseEntity<CustomResponse<Colores>> createColores(@RequestBody Colores colores) {
+    public ResponseEntity<CustomResponse<Colores>> createColores(Colores colores) {
         CustomResponse<Colores> response = new CustomResponse<Colores>();
         try {
             if (colores == null) {
@@ -38,7 +36,8 @@ public class ColoresControler {
                 response.setMessage("Colores no creado, datos incompletos");
                 response.setData(colores);
             } else if ((colores.getColorPrimario() == null || colores.getColorSecundario() == null
-                    || colores.getColorTerciario() == null || colores.getIdInstitucion() == null)) {
+                    || colores.getColorTerciario() == null)
+                    && colores.getIdInstitucion() != null) {
                 response.setError(true);
                 response.setStatusCode(200);
                 response.setMessage("Colores no creado, datos incompletos");

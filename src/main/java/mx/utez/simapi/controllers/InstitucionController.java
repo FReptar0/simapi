@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import mx.utez.simapi.models.Colores;
 import mx.utez.simapi.models.Institucion;
 import mx.utez.simapi.repository.InstitucionRepository;
 import mx.utez.simapi.utils.CustomHandlerException;
@@ -24,6 +26,7 @@ import mx.utez.simapi.utils.UUIDGenerator;
 
 @RestController
 @RequestMapping("/api/institucion")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class InstitucionController {
     @Autowired
     private InstitucionRepository institucionRepository;
@@ -66,6 +69,9 @@ public class InstitucionController {
                     institucion.setPassword(passwordEncoder.encode(institucion.getPassword()));
                     Boolean passwordMatch = passwordEncoder.matches(password, institucion.getPassword());
                     System.out.println("Password match: " + passwordMatch);
+                    //ColoresControler coloresControler = new ColoresControler();
+                    //ResponseEntity<CustomResponse<Colores>> responseColores = coloresControler.createColores(new Colores(institucion.getIdInstitucion(), "#A3B2CF", "#385273", "#00264D"));
+                    //System.out.println("MENSAJE COLORES: " + responseColores.getBody().getMessage());
                     institucionRepository.save(institucion);
                     response.setError(false);
                     response.setStatusCode(200);
@@ -136,7 +142,7 @@ public class InstitucionController {
     }
 
     @PutMapping("/{idInstitucion}")
-    public ResponseEntity<CustomResponse<Institucion>> updateInstitucion(@RequestParam String idInstitucion,
+    public ResponseEntity<CustomResponse<Institucion>> updateInstitucion(@PathVariable String idInstitucion,
             @RequestBody Institucion institucion) {
         CustomResponse<Institucion> response = new CustomResponse<Institucion>();
         try {
@@ -181,7 +187,7 @@ public class InstitucionController {
     }
 
     @DeleteMapping("/{idInstitucion}")
-    public ResponseEntity<CustomResponse<Institucion>> deleteInstitucion(@RequestParam String idInstitucion) {
+    public ResponseEntity<CustomResponse<Institucion>> deleteInstitucion(@PathVariable String idInstitucion) {
         CustomResponse<Institucion> response = new CustomResponse<Institucion>();
         try {
             Institucion institucion = institucionRepository.findById(idInstitucion).orElse(null);

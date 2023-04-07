@@ -20,7 +20,7 @@ import mx.utez.simapi.utils.CustomResponse;
 
 @RestController
 @RequestMapping("/api/auth/camillas")
-@CrossOrigin(origins = "")
+@CrossOrigin(origins = "*")
 public class CamillaControllerAuth {
     @Autowired
     private CamillasRepository camillasRepository;
