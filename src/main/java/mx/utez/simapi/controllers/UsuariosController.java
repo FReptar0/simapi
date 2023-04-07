@@ -147,7 +147,7 @@ public class UsuariosController {
     public ResponseEntity<CustomResponse<List<Usuarios>>> getByInstitucion(@PathVariable String idInstitucion) {
         CustomResponse<List<Usuarios>> response = new CustomResponse<>();
         try {
-            List<Usuarios> usuarios = usuariosRepository.findByInstitucion(idInstitucion);
+            List<Usuarios> usuarios = usuariosRepository.findByIdInstitucion(idInstitucion);
             if (usuarios == null) {
                 response.setError(true);
                 response.setStatusCode(400);

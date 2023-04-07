@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,10 +19,10 @@ import mx.utez.simapi.models.Institucion;
 import mx.utez.simapi.models.UsuarioLogin;
 import mx.utez.simapi.repository.InstitucionRepository;
 import mx.utez.simapi.utils.CustomResponse;
-import mx.utez.simapi.utils.HashedPass;
 
 @RestController
 @RequestMapping("/api/auth/institucion")
+@CrossOrigin(origins = "*")
 public class InstitucionAuthController {
     @Autowired
     InstitucionRepository institucionRepository;
@@ -31,9 +31,6 @@ public class InstitucionAuthController {
     InstitucionController institucionController;
 
     PasswordEncoder encoder = new BCryptPasswordEncoder();
-
-    @Value("${jwt.secret}")
-    private String secret;
 
     @PostMapping
     public ResponseEntity<CustomResponse<Object>> login(@RequestBody UsuarioLogin usuarioLogin) {
@@ -55,9 +52,17 @@ public class InstitucionAuthController {
                     response.setError(false);
                     response.setStatusCode(200);
                     response.setMessage("Login exitoso");
-
+                    Institucion institucion = institucionRepository.findByCorreo(usuarioLogin.getCorreo());
                     Map<String, Object> jsonMap = new HashMap<>();
                     jsonMap.put("estado", true);
+                    jsonMap.put("idInstitucion", institucion.getIdInstitucion());
+                    jsonMap.put("logo", institucion.getLogo());
+                    jsonMap.put("nombre", institucion.getNombre());
+                    jsonMap.put("correo", institucion.getCorreo());
+                    jsonMap.put("password", institucion.getPassword());
+                    jsonMap.put("cantidadCamillas", institucion.getCantidadCamillas());
+                    jsonMap.put("cantidadDeSalas", institucion.getCantidadDeSalas());
+                    jsonMap.put("cantidadDeIslas", institucion.getCantidadDeIslas());
 
                     response.setData(jsonMap);
                     return new ResponseEntity<>(response, HttpStatus.OK);
