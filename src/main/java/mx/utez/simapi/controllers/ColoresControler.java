@@ -38,8 +38,8 @@ public class ColoresControler {
                 response.setStatusCode(200);
                 response.setMessage("Colores no creado, datos incompletos");
                 response.setData(colores);
-            } else if ((colores.getColorPrimario() == null || colores.getColorSecundario() == null
-                    || colores.getColorTerciario() == null || colores.getIdInstitucion() == null)
+            } else if ((colores.getColorPrimario() != null || colores.getColorSecundario() != null
+                    || colores.getColorTerciario() != null || colores.getIdInstitucion() != null)
                     && colores.getIdColores() == null) {
                 response.setError(true);
                 response.setStatusCode(200);
