@@ -126,6 +126,7 @@ public class ColoresControllerAuth {
                 coloresToUpdate.setColorPrimario(colores.getColorPrimario());
                 coloresToUpdate.setColorSecundario(colores.getColorSecundario());
                 coloresToUpdate.setColorTerciario(colores.getColorTerciario());
+                coloresToUpdate.setIdInstitucion(colores.getIdInstitucion());
                 //guardar los cambios del registro en la base de datos
                 coloresRepository.save(coloresToUpdate);
                 response.setError(false);
