@@ -24,6 +24,7 @@ import mx.utez.simapi.utils.CustomResponse;
 
 @RestController
 @RequestMapping("/api/auth/institucion")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class InstitucionAuthController {
     @Autowired
     InstitucionRepository institucionRepository;
