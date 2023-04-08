@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Document(collection = "colores")
 public class Colores {
     @Id
+    String idColores;
     String idInstitucion;
     String colorPrimario;
     String colorSecundario;

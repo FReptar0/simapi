@@ -19,6 +19,7 @@ import mx.utez.simapi.models.Colores;
 import mx.utez.simapi.repository.ColoresRepository;
 import mx.utez.simapi.utils.CustomHandlerException;
 import mx.utez.simapi.utils.CustomResponse;
+import mx.utez.simapi.utils.UUIDGenerator;
 
 @RestController
 @RequestMapping("/api/colores")
