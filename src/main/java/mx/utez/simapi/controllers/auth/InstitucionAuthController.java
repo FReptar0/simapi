@@ -24,7 +24,7 @@ import mx.utez.simapi.utils.CustomResponse;
 
 @RestController
 @RequestMapping("/api/auth/institucion")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class InstitucionAuthController {
     @Autowired
     InstitucionRepository institucionRepository;
@@ -61,7 +61,7 @@ public class InstitucionAuthController {
 
                 Map<String, Object> jsonMap = new HashMap<>();
                 jsonMap.put("estado", true);
-
+                jsonMap.put("idInstitucion", institucion.getIdInstitucion());
                 Colores color = coloresRepository.findByIdInstitucion(institucion.getIdInstitucion());
                 jsonMap.put("color", color);
 
