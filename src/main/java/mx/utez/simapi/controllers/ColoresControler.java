@@ -22,9 +22,9 @@ import mx.utez.simapi.utils.CustomResponse;
 
 @RestController
 @RequestMapping("/api/colores")
-@CrossOrigin(origins = "*") //darle acceso a todos los dominios para que puedan interactuar con el api
+@CrossOrigin(origins = "*") // darle acceso a todos los dominios para que puedan interactuar con el api
 public class ColoresControler {
-    
+
     @Autowired
     private ColoresRepository coloresRepository;
 
@@ -32,25 +32,23 @@ public class ColoresControler {
     public ResponseEntity<CustomResponse<Colores>> createColores(@RequestBody Colores colores) {
         CustomResponse<Colores> response = new CustomResponse<Colores>();
         try {
-            if (colores == null) {
-                response.setError(true);
-                response.setStatusCode(200);
-                response.setMessage("Colores no creado, datos incompletos");
-                response.setData(colores);
-            } else if ((colores.getColorPrimario() == null || colores.getColorSecundario() == null
-                    || colores.getColorTerciario() == null || colores.getIdInstitucion() == null)) {
-                response.setError(true);
-                response.setStatusCode(200);
-                response.setMessage("Colores no creado, datos incompletos");
-                response.setData(colores);
-            } else {
+            if ((colores.getColorPrimario() != null && colores.getColorSecundario() != null
+                    && colores.getColorTerciario() != null && colores.getIdInstitucion() != null)
+                    && colores.getIdColores() == null) {
+                colores.setIdColores(UUIDGenerator.getId());
                 coloresRepository.save(colores);
                 response.setError(false);
                 response.setStatusCode(200);
-                response.setMessage("Colores creado correctamente");
+                response.setMessage("Colores creados");
                 response.setData(colores);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("Colores no creados, datos incompletos");
+                response.setData(colores);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.setError(true);
             response.setStatusCode(400);
@@ -127,7 +125,7 @@ public class ColoresControler {
                 coloresToUpdate.setColorPrimario(colores.getColorPrimario());
                 coloresToUpdate.setColorSecundario(colores.getColorSecundario());
                 coloresToUpdate.setColorTerciario(colores.getColorTerciario());
-                //guardar los cambios del registro en la base de datos
+                coloresToUpdate.setIdInstitucion(colores.getIdInstitucion());
                 coloresRepository.save(coloresToUpdate);
                 response.setError(false);
                 response.setStatusCode(200);

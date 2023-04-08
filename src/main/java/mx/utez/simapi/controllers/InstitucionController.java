@@ -65,13 +65,9 @@ public class InstitucionController {
                     response.setData(institucion);
                 } else {
                     institucion.setIdInstitucion(UUIDGenerator.getId());
-                    String password = institucion.getPassword();
                     institucion.setPassword(passwordEncoder.encode(institucion.getPassword()));
-                    Boolean passwordMatch = passwordEncoder.matches(password, institucion.getPassword());
-                    System.out.println("Password match: " + passwordMatch);
-                    //ColoresControler coloresControler = new ColoresControler();
-                    //ResponseEntity<CustomResponse<Colores>> responseColores = coloresControler.createColores(new Colores(institucion.getIdInstitucion(), "#A3B2CF", "#385273", "#00264D"));
-                    //System.out.println("MENSAJE COLORES: " + responseColores.getBody().getMessage());
+                    institucion.setLogo(
+                            "https://firebasestorage.googleapis.com/v0/b/simapi-logos.appspot.com/o/default-logo.png?alt=media&token=924c860a-fed0-428c-8a0a-27d214e4abe6");
                     institucionRepository.save(institucion);
                     response.setError(false);
                     response.setStatusCode(200);

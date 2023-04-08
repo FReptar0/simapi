@@ -5,5 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import mx.utez.simapi.models.Colores;
 
 public interface ColoresRepository extends MongoRepository<Colores, String> {
-    Colores findByIdInstitucion(String idInstitucion);
+    public Colores findByIdColores(String idColores);
+    public Colores findByIdInstitucion(String idInstitucion);
 }
