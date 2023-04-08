@@ -18,6 +18,7 @@ import mx.utez.simapi.models.Colores;
 import mx.utez.simapi.repository.ColoresRepository;
 import mx.utez.simapi.utils.CustomHandlerException;
 import mx.utez.simapi.utils.CustomResponse;
+import mx.utez.simapi.utils.UUIDGenerator;
 
 @RestController
 @RequestMapping("/api/auth/colores")
@@ -37,12 +38,13 @@ public class ColoresControllerAuth {
                 response.setData(colores);
             } else if ((colores.getColorPrimario() == null || colores.getColorSecundario() == null
                     || colores.getColorTerciario() == null)
-                    && colores.getIdInstitucion() != null) {
+                    && colores.getIdInstitucion() != null && colores.getIdColores() == null) {
                 response.setError(true);
                 response.setStatusCode(200);
                 response.setMessage("Colores no creado, datos incompletos");
                 response.setData(colores);
             } else {
+                colores.setIdColores(UUIDGenerator.getId());
                 coloresRepository.save(colores);
                 response.setError(false);
                 response.setStatusCode(200);
@@ -126,6 +128,7 @@ public class ColoresControllerAuth {
                 coloresToUpdate.setColorPrimario(colores.getColorPrimario());
                 coloresToUpdate.setColorSecundario(colores.getColorSecundario());
                 coloresToUpdate.setColorTerciario(colores.getColorTerciario());
+                coloresToUpdate.setIdInstitucion(colores.getIdInstitucion());
                 //guardar los cambios del registro en la base de datos
                 coloresRepository.save(coloresToUpdate);
                 response.setError(false);
