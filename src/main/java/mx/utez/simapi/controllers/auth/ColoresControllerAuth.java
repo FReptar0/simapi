@@ -22,9 +22,9 @@ import mx.utez.simapi.utils.UUIDGenerator;
 
 @RestController
 @RequestMapping("/api/auth/colores")
-@CrossOrigin(origins = "*") //darle acceso a todos los dominios para que puedan interactuar con el api
+@CrossOrigin(origins = "*") // darle acceso a todos los dominios para que puedan interactuar con el api
 public class ColoresControllerAuth {
-    
+
     @Autowired
     private ColoresRepository coloresRepository;
 
@@ -125,11 +125,11 @@ public class ColoresControllerAuth {
                 response.setMessage("No se encontraron colores");
                 response.setData(colores);
             } else {
+                coloresToUpdate.setIdInstitucion(colores.getIdInstitucion());
                 coloresToUpdate.setColorPrimario(colores.getColorPrimario());
                 coloresToUpdate.setColorSecundario(colores.getColorSecundario());
                 coloresToUpdate.setColorTerciario(colores.getColorTerciario());
                 coloresToUpdate.setIdInstitucion(colores.getIdInstitucion());
-                //guardar los cambios del registro en la base de datos
                 coloresRepository.save(coloresToUpdate);
                 response.setError(false);
                 response.setStatusCode(200);
