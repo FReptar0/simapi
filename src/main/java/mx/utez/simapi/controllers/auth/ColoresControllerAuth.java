@@ -18,12 +18,13 @@ import mx.utez.simapi.models.Colores;
 import mx.utez.simapi.repository.ColoresRepository;
 import mx.utez.simapi.utils.CustomHandlerException;
 import mx.utez.simapi.utils.CustomResponse;
+import mx.utez.simapi.utils.UUIDGenerator;
 
 @RestController
 @RequestMapping("/api/auth/colores")
-@CrossOrigin(origins = "*") //darle acceso a todos los dominios para que puedan interactuar con el api
+@CrossOrigin(origins = "*") // darle acceso a todos los dominios para que puedan interactuar con el api
 public class ColoresControllerAuth {
-    
+
     @Autowired
     private ColoresRepository coloresRepository;
 
@@ -37,12 +38,13 @@ public class ColoresControllerAuth {
                 response.setData(colores);
             } else if ((colores.getColorPrimario() == null || colores.getColorSecundario() == null
                     || colores.getColorTerciario() == null)
-                    && colores.getIdInstitucion() != null) {
+                    && colores.getIdInstitucion() != null && colores.getIdColores() == null) {
                 response.setError(true);
                 response.setStatusCode(200);
                 response.setMessage("Colores no creado, datos incompletos");
                 response.setData(colores);
             } else {
+                colores.setIdColores(UUIDGenerator.getId());
                 coloresRepository.save(colores);
                 response.setError(false);
                 response.setStatusCode(200);
@@ -123,10 +125,11 @@ public class ColoresControllerAuth {
                 response.setMessage("No se encontraron colores");
                 response.setData(colores);
             } else {
+                coloresToUpdate.setIdInstitucion(colores.getIdInstitucion());
                 coloresToUpdate.setColorPrimario(colores.getColorPrimario());
                 coloresToUpdate.setColorSecundario(colores.getColorSecundario());
                 coloresToUpdate.setColorTerciario(colores.getColorTerciario());
-                //guardar los cambios del registro en la base de datos
+                coloresToUpdate.setIdInstitucion(colores.getIdInstitucion());
                 coloresRepository.save(coloresToUpdate);
                 response.setError(false);
                 response.setStatusCode(200);
