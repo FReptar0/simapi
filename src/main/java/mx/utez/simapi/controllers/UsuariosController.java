@@ -185,7 +185,7 @@ public class UsuariosController {
                 response.setStatusCode(400);
                 response.setMessage("Usuario no actualizado, no encontrado");
                 response.setData(usuario);
-            } else if (usuario.getNombre() == null || usuario.getCorreo() == null || usuario.getPassword() == null) {
+            } else if (usuario.getNombre() == null || usuario.getCorreo() == null) {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("Usuario no actualizado, datos incompletos");
