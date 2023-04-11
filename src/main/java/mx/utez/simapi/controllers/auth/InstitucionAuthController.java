@@ -62,6 +62,8 @@ public class InstitucionAuthController {
                 Map<String, Object> jsonMap = new HashMap<>();
                 jsonMap.put("estado", true);
                 jsonMap.put("idInstitucion", institucion.getIdInstitucion());
+                jsonMap.put("logo", institucion.getLogo());
+                jsonMap.put("nombre", institucion.getNombre());
                 Colores color = coloresRepository.findByIdInstitucion(institucion.getIdInstitucion());
                 jsonMap.put("color", color);
 
