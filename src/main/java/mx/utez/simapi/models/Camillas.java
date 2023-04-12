@@ -16,4 +16,5 @@ public class Camillas {
     private boolean estadoAlarma;
     private int idSala; 
     private int idIsla; 
+    private int idBoton;
 }
