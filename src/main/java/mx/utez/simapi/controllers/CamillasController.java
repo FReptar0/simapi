@@ -248,7 +248,7 @@ public class CamillasController {
                 return new ResponseEntity<>(response, HttpStatus.EXPECTATION_FAILED);
             } else if ((camilla.getIdEnfermera() != null || camilla.getIdInstitucion() != null
                     || camilla.getIdIsla() != 0 || camilla.getIdSala() != 0 || camilla.getNombre() != null
-                    || camilla.getNumeroExpediente() == null) && camilla.getIdCamillas() == null) {
+                    || camilla.getNumeroExpediente() != null) && camilla.getIdCamillas() != null) {
                 response.setError(true);
                 response.setStatusCode(200);
                 response.setMessage("Camilla no actualizada, datos incompletos");
