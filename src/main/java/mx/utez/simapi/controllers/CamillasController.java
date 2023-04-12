@@ -23,7 +23,8 @@ import mx.utez.simapi.utils.UUIDGenerator;
 
 @RestController
 @RequestMapping("/api/camillas")
-@CrossOrigin(origins = "*") // darle acceso a todos los dominios para que puedan interactuar con el api
+@CrossOrigin(origins = "*", allowedHeaders = "*") // darle acceso a todos los dominios para que puedan interactuar con
+                                                  // el api
 public class CamillasController {
     @Autowired
     private CamillasRepository camillasRepository;
@@ -261,6 +262,36 @@ public class CamillasController {
                 camillaToUpdate.setNombre(camilla.getNombre());
                 camillaToUpdate.setNumeroExpediente(camilla.getNumeroExpediente());
                 camillaToUpdate.setEstado(camilla.isEstado());
+                camillaToUpdate.setEstadoAlarma(camilla.isEstadoAlarma());
+                camillasRepository.save(camillaToUpdate);
+                response.setError(false);
+                response.setStatusCode(200);
+                response.setMessage("Camilla actualizada correctamente");
+                response.setData(camillaToUpdate);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            response.setError(true);
+            response.setStatusCode(400);
+            response.setMessage(CustomHandlerException.handleException(e) + "\nCamilla no actualizada");
+            response.setData(camilla);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/estado/{idCamillas}")
+    public ResponseEntity<CustomResponse<Camillas>> updateEstadoCamilla(@PathVariable String idCamillas,
+            @RequestBody Camillas camilla) {
+        CustomResponse<Camillas> response = new CustomResponse<Camillas>();
+        try {
+            Camillas camillaToUpdate = camillasRepository.findById(idCamillas).orElse(null);
+            if (camillaToUpdate == null) {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("Camilla no encontrada");
+                response.setData(camilla);
+                return new ResponseEntity<>(response, HttpStatus.EXPECTATION_FAILED);
+            } else {
                 camillaToUpdate.setEstadoAlarma(camilla.isEstadoAlarma());
                 camillasRepository.save(camillaToUpdate);
                 response.setError(false);

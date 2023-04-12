@@ -117,4 +117,31 @@ public class CamillaControllerAuth {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/institucion/{idInstitucion}")
+    public ResponseEntity<CustomResponse<List<Camillas>>> getCamillasByInstitucion(
+            @PathVariable String idInstitucion) {
+        CustomResponse<List<Camillas>> response = new CustomResponse<List<Camillas>>();
+        try {
+            List<Camillas> camillas = camillasRepository.findByIdInstitucion(idInstitucion);
+            if (camillas.isEmpty()) {
+                response.setError(true);
+                response.setStatusCode(200);
+                response.setMessage("No hay camillas");
+                response.setData(camillas);
+            } else {
+                response.setError(false);
+                response.setStatusCode(200);
+                response.setMessage("Camillas obtenidas correctamente");
+                response.setData(camillas);
+            }
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.setError(true);
+            response.setStatusCode(400);
+            response.setMessage(CustomHandlerException.handleException(e) + "\nCamillas no obtenidas");
+            response.setData(null);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

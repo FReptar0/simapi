@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import mx.utez.simapi.controllers.UsuariosController;
+import mx.utez.simapi.models.Colores;
 import mx.utez.simapi.models.JwtToken;
 import mx.utez.simapi.models.UsuarioLogin;
 import mx.utez.simapi.models.Usuarios;
+import mx.utez.simapi.repository.ColoresRepository;
 import mx.utez.simapi.repository.UsuariosRepository;
 import mx.utez.simapi.utils.CustomHandlerException;
 import mx.utez.simapi.utils.CustomResponse;
@@ -34,6 +36,8 @@ public class UsuariosAuthController {
     UsuariosController usuariosController;
     @Autowired
     UsuariosRepository usuariosRepository;
+    @Autowired
+    ColoresRepository coloresRepository;
 
     @PostMapping("/login")
     public ResponseEntity<CustomResponse<Object>> login(@Valid @RequestBody UsuarioLogin usuarioLogin) {
@@ -57,7 +61,21 @@ public class UsuariosAuthController {
                 jsonMap.put("idUsuario", usuario.getIdUsuario());
                 jsonMap.put("rol", usuario.getRol());
 
-                response.setData(jsonMap);
+                if (usuario.getRol().equals("SA")) {
+                    Colores color = new Colores();
+                    color.setColorPrimario("#A3B2CF");
+                    color.setColorSecundario("#385273");
+                    color.setColorTerciario("#00264D");
+
+                    jsonMap.put("colores", color);
+
+                    response.setData(jsonMap);
+                } else {
+                    Colores color = coloresRepository.findByIdInstitucion(usuario.getIdInstitucion());
+                    jsonMap.put("colores", color);
+                    response.setData(jsonMap);
+                }
+
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
                 response.setError(true);
