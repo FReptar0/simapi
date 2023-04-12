@@ -42,9 +42,8 @@ public class InstitucionController {
                 response.setMessage("Institucion no creada, datos incompletos");
                 response.setData(institucion);
             } else if ((institucion.getNombre() == null || institucion.getCorreo() == null
-                    || institucion.getPassword() == null || institucion.getLogo() == null
-                    || institucion.getCantidadCamillas() == 0 || institucion.getCantidadDeSalas() == 0
-                    || institucion.getCantidadDeIslas() == 0)
+                    || institucion.getPassword() == null || institucion.getCantidadCamillas() == 0 
+                    || institucion.getCantidadDeSalas() == 0 || institucion.getCantidadDeIslas() == 0)
                     && institucion.getIdInstitucion() == null) {
                 response.setError(true);
                 response.setStatusCode(400);
@@ -147,14 +146,21 @@ public class InstitucionController {
                 response.setMessage("Institucion no encontrada");
                 response.setData(institucion);
             } else if ((institucion.getNombre() != null || institucion.getCorreo() != null
-                    || institucion.getPassword() != null || institucion.getLogo() != null
                     || institucion.getCantidadCamillas() != 0 || institucion.getCantidadDeSalas() != 0
                     || institucion.getCantidadDeIslas() != 0)
                     && idInstitucion != null) {
                 institucionDB.setNombre(institucion.getNombre());
                 institucionDB.setCorreo(institucion.getCorreo());
-                institucionDB.setPassword(passwordEncoder.encode(institucion.getPassword()));
-                institucionDB.setLogo(institucion.getLogo());
+                if(institucion.getPassword() != null){
+                    institucionDB.setPassword(passwordEncoder.encode(institucion.getPassword()));
+                } else {
+                    institucionDB.setPassword(institucionDB.getPassword());
+                }
+                if (institucion.getLogo() != null){
+                    institucionDB.setLogo(institucion.getLogo());
+                } else {
+                    institucionDB.setLogo(institucionDB.getLogo());
+                }
                 institucionDB.setCantidadCamillas(institucion.getCantidadCamillas());
                 institucionDB.setCantidadDeSalas(institucion.getCantidadDeSalas());
                 institucionDB.setCantidadDeIslas(institucion.getCantidadDeIslas());

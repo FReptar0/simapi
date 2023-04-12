@@ -67,7 +67,7 @@ public class UsuariosController {
                 response.setData(usuario);
             } else {
                 if (usuario.getRol().equals("SA") || usuario.getRol().equals("E") || usuario.getRol().equals("A")) {
-                    if (usuario.getRol() == "SA" && usuariosRepository.countSA() > 0) {
+                    if (usuario.getRol().equals("SA") && usuariosRepository.countSA() > 0) {
                         response.setError(true);
                         response.setStatusCode(400);
                         response.setMessage("Usuario no creado, rol SA ya existente");
@@ -185,22 +185,29 @@ public class UsuariosController {
                 response.setStatusCode(400);
                 response.setMessage("Usuario no actualizado, no encontrado");
                 response.setData(usuario);
-            } else if (usuario.getNombre() == null || usuario.getCorreo() == null) {
+            } else if (usuario.getNombre() == null || usuario.getApellidos() == null || usuario.getCorreo() == null) {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("Usuario no actualizado, datos incompletos");
                 response.setData(usuario);
             } else {
-                if (usuario.getRol() == "SA" || usuario.getRol() == "E" || usuario.getRol() == "A") {
-                    if (usuario.getRol() == "SA" && usuariosRepository.countSA() > 0) {
+                if (usuario.getRol().equals("SA") || usuario.getRol().equals("E") || usuario.getRol().equals("A")) {
+                    System.out.println("entro al segundo if");
+                    if (usuario.getRol().equals("SA") && usuariosRepository.countSA() > 0) {
+                        System.out.println("entro al tercer if");
                         response.setError(true);
                         response.setStatusCode(400);
                         response.setMessage("Usuario no actualizado, rol SA ya existente");
                         response.setData(usuario);
                     } else {
+                        System.out.println("entro al tercer else");
                         usuarioDB.setNombre(usuario.getNombre());
                         usuarioDB.setCorreo(usuario.getCorreo());
-                        usuarioDB.setPassword(passwordEncoder.encode(usuario.getPassword()));
+                        if(usuario.getPassword() != null){
+                            usuarioDB.setPassword(passwordEncoder.encode(usuario.getPassword()));
+                        } else {
+                            usuarioDB.setPassword(usuarioDB.getPassword());
+                        }
                         usuarioDB.setRol(usuario.getRol());
                         usuarioDB = usuariosRepository.save(usuarioDB);
                         response.setError(false);
