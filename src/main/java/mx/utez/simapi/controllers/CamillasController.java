@@ -196,12 +196,12 @@ public class CamillasController {
         }
     }
 
-    @GetMapping("/enfermera/{idEnfermera}")
+    @GetMapping("/enfermera/{idEnfermera}/turno/{turno}")
     public ResponseEntity<CustomResponse<List<Camillas>>> getCamillasByEnfermera(
-            @PathVariable String idEnfermera) {
+            @PathVariable String idEnfermera, @PathVariable String turno) {
         CustomResponse<List<Camillas>> response = new CustomResponse<List<Camillas>>();
         try {
-            List<Camillas> camillas = camillasRepository.findByIdEnfermera(idEnfermera);
+            List<Camillas> camillas = camillasRepository.findCamillasByTurnoAndId(turno, idEnfermera);
             if (camillas == null) {
                 response.setError(true);
                 response.setStatusCode(200);
