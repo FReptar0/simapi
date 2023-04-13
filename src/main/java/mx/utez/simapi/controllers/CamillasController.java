@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import mx.utez.simapi.models.Camillas;
+import mx.utez.simapi.models.Horario;
 import mx.utez.simapi.repository.CamillasRepository;
 import mx.utez.simapi.utils.CustomHandlerException;
 import mx.utez.simapi.utils.CustomResponse;
@@ -336,12 +337,25 @@ public class CamillasController {
             int ctIslas = 1;
             int ctSala = 1;
             List<Camillas> camillas = new ArrayList<Camillas>();
-            List<String> idEnfermera = new ArrayList<String>();
-            idEnfermera.add("");
+
+            Horario horario = new Horario();
+            List<String> matutino = new ArrayList<String>();
+            matutino.add("");
+            List<String> vespertino = new ArrayList<String>();
+            vespertino.add("");
+            List<String> nocturno = new ArrayList<String>();
+            nocturno.add("");
+
+            List<Horario> horarios = new ArrayList<Horario>();
+            horario.setMatutino(matutino);
+            horario.setVespertino(vespertino);
+            horario.setNocturno(nocturno);
+            horarios.add(horario);
+
             for (int i = 0; i < cantidadCamillas; i++) {
                 Camillas camilla = new Camillas();
                 camilla.setIdCamillas(UUIDGenerator.getId());
-                camilla.setIdEnfermera(idEnfermera);
+                camilla.setIdEnfermera(horarios);
                 camilla.setIdInstitucion(idInstitucion);
                 camilla.setIdIsla(ctIslas);
                 camilla.setIdSala(ctSala);

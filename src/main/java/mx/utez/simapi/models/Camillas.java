@@ -13,7 +13,7 @@ public class Camillas {
     private String nombre;
     private String numeroExpediente;
     private String idInstitucion;
-    private List<String> idEnfermera;
+    private List<Horario> idEnfermera;
     private boolean estado;
     private boolean estadoAlarma;
     private int idSala; 
