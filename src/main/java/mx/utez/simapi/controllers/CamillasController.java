@@ -1,5 +1,6 @@
 package mx.utez.simapi.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +34,8 @@ public class CamillasController {
         CustomResponse<Camillas> response = new CustomResponse<Camillas>();
         try {
             if ((camilla.getIdEnfermera() == null || camilla.getIdInstitucion() == null || camilla.getIdIsla() == 0
-                    || camilla.getIdSala() == 0 || camilla.getNombre() == null
-                    || camilla.getNumeroExpediente() == null || camilla.getIdBoton() == 0)
+                    || camilla.getIdSala() == 0 || camilla.getNombre() != null
+                    || camilla.getNumeroExpediente() != null || camilla.getIdBoton() == 0)
                     && (camilla.getIdCamillas() != null && camilla.isEstado() == true
                             && camilla.isEstadoAlarma() == true)) {
                 response.setError(true);
@@ -323,6 +324,56 @@ public class CamillasController {
             response.setMessage(CustomHandlerException.handleException(e) + "\nCamilla no eliminada");
             response.setData(null);
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/map/sala/{idSala}/isla/{idIsla}/institucion/{idInstitucion}")
+    public ResponseEntity<CustomResponse<List<Camillas>>> createCamillas(@PathVariable int idSala,
+            @PathVariable int idIsla, @PathVariable String idInstitucion) {
+        CustomResponse<List<Camillas>> response = new CustomResponse<List<Camillas>>();
+        try {
+            int cantidadCamillas = idSala * 10;
+            int ctIslas = 1;
+            int ctSala = 1;
+            List<Camillas> camillas = new ArrayList<Camillas>();
+            List<String> idEnfermera = new ArrayList<String>();
+            idEnfermera.add("");
+            for (int i = 0; i < cantidadCamillas; i++) {
+                Camillas camilla = new Camillas();
+                camilla.setIdCamillas(UUIDGenerator.getId());
+                camilla.setIdEnfermera(idEnfermera);
+                camilla.setIdInstitucion(idInstitucion);
+                camilla.setIdIsla(ctIslas);
+                camilla.setIdSala(ctSala);
+                camilla.setNombre("");
+                camilla.setNumeroExpediente("");
+                camilla.setIdBoton(0);
+                camilla.setEstado(false);
+                camilla.setEstadoAlarma(false);
+                camillas.add(camilla);
+                ctIslas++;
+                if (ctIslas > idIsla) {
+                    ctIslas = 1;
+                    ctSala++;
+                }
+                if (ctSala > idSala) {
+                    ctSala = 1;
+                }
+            }
+
+            camillasRepository.saveAll(camillas);
+            response.setError(false);
+            response.setStatusCode(200);
+            response.setMessage("Camillas creadas correctamente");
+            response.setData(camillas);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.setError(true);
+            response.setStatusCode(500);
+            response.setMessage(CustomHandlerException.handleException(e) + "\nCamillas no creadas");
+            response.setData(null);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

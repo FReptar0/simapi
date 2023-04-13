@@ -1,5 +1,7 @@
 package mx.utez.simapi.models;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 
 import lombok.Data;
@@ -11,7 +13,7 @@ public class Camillas {
     private String nombre;
     private String numeroExpediente;
     private String idInstitucion;
-    private String idEnfermera;
+    private List<String> idEnfermera;
     private boolean estado;
     private boolean estadoAlarma;
     private int idSala; 
