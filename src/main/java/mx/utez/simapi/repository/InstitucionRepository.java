@@ -7,4 +7,5 @@ public interface InstitucionRepository extends MongoRepository<Institucion, Stri
     public boolean existsByNombre(String nombre);
     public boolean existsByCorreo(String correo);
     public Institucion findByCorreo(String correo); 
+    public Institucion findByIdInstitucion(String idInstitucion);
 }
