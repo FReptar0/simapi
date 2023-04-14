@@ -38,10 +38,8 @@ public class HistorialController {
                 response.setMessage("Historial no creado, datos incompletos");
                 response.setData(historial);
             } else if ((historial.getFechaPeticion() == null || historial.getHoraDePeticion() == null
-                    || historial.getFechaAtencion() == null || historial.getHoraDeAtencion() == null
-                    || historial.getFechaAtencion() == null || historial.getIdPaciente() == null
-                    || historial.getIdEnfermera() == null || historial.getIdCamilla() == null)
-                    && historial.getIdHistorial() == null) {
+                    || historial.getIdCamilla() == null|| historial.getIdInstitucion() == null)
+                     && historial.getIdHistorial() == null) {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("Historial no creado, datos incompletos");
@@ -102,6 +100,25 @@ public class HistorialController {
         }
     }
 
+    @GetMapping("/institucion/{idInstitucion}")
+    public ResponseEntity<CustomResponse<List<Historial>>> getHistorialByIdInstitucion(@PathVariable String idInstitucion) {
+        CustomResponse<List<Historial>> response = new CustomResponse<List<Historial>>();
+        try {
+            List<Historial> historial = historialRepository.findByIdInstitucion(idInstitucion);
+            response.setError(false);
+            response.setStatusCode(200);
+            response.setMessage("Historial obtenido correctamente");
+            response.setData(historial);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.setError(true);
+            response.setStatusCode(400);
+            response.setMessage(CustomHandlerException.handleException(e) + "\nHistorial no obtenido");
+            response.setData(null);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PutMapping("/{idHistorial}")
     public ResponseEntity<CustomResponse<Historial>> updateHistorial(@RequestBody Historial historial) {
         CustomResponse<Historial> response = new CustomResponse<Historial>();
@@ -113,7 +130,6 @@ public class HistorialController {
                 historialToUpdate.setHoraDePeticion(historial.getHoraDePeticion());
                 historialToUpdate.setFechaAtencion(historial.getFechaAtencion());
                 historialToUpdate.setHoraDeAtencion(historial.getHoraDeAtencion());
-                historialToUpdate.setIdPaciente(historial.getIdPaciente());
                 historialToUpdate.setIdEnfermera(historial.getIdEnfermera());
                 historialToUpdate.setIdCamilla(historial.getIdCamilla());
                 historialRepository.save(historialToUpdate);
