@@ -42,9 +42,8 @@ public class InstitucionController {
                 response.setMessage("Institucion no creada, datos incompletos");
                 response.setData(institucion);
             } else if ((institucion.getNombre() == null || institucion.getCorreo() == null
-                    || institucion.getPassword() == null || institucion.getCantidadCamillas() == 0 
-                    || institucion.getCantidadDeSalas() == 0 || institucion.getCantidadDeIslas() == 0)
-                    && institucion.getIdInstitucion() == null) {
+                    || institucion.getPassword() == null || institucion.getCantidadDeSalas() == 0 
+                    || institucion.getCantidadDeIslas() == 0) && institucion.getIdInstitucion() == null) {
                 response.setError(true);
                 response.setStatusCode(400);
                 response.setMessage("Institucion no creada, datos incompletos");
