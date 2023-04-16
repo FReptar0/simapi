@@ -26,4 +26,7 @@ public interface CamillasRepository extends MongoRepository<Camillas, String> {
 
     @Query("{'idEnfermera.?0': { $in: [ ?1 ] }}")
     List<Camillas> findCamillasByTurnoAndId(String turno, String id);
+
+    @Query(value = "{ 'numeroExpediente': ?0, 'idEnfermera.0.?1': ?2 }", count = true)
+    long countByNumeroExpedienteAndIdEnfermeraInTurno(String numeroExpediente, String turno, String idEnfermera);
 }
