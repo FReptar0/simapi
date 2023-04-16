@@ -27,6 +27,7 @@ import mx.utez.simapi.repository.HistorialRepository;
 import mx.utez.simapi.repository.UsuariosRepository;
 import mx.utez.simapi.utils.CustomHandlerException;
 import mx.utez.simapi.utils.CustomResponse;
+import mx.utez.simapi.utils.RequestURL;
 import mx.utez.simapi.utils.Time;
 import mx.utez.simapi.utils.UUIDGenerator;
 
@@ -91,7 +92,7 @@ public class AlarmaController {
                 message.setTo("all");
                 message.setText("El paciente " + camilla.getNombre() + " ha activado la alarma");
 
-                this.template.convertAndSend("/all/messages", message);
+                RequestURL.request();
 
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
@@ -155,11 +156,7 @@ public class AlarmaController {
                     response.setData(data);
                     response.setStatusCode(200);
 
-                    Message message = new Message();
-                    message.setTo("all");
-                    message.setText("Se a desactivado la alarma del paciente " + camilla.getNombre());
-
-                    this.template.convertAndSend("/all/messages", message);
+                    RequestURL.request();
 
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 }
@@ -212,11 +209,7 @@ public class AlarmaController {
                     response.setData(data);
                     response.setStatusCode(200);
 
-                    Message message = new Message();
-                    message.setTo("all");
-                    message.setText("Se a desactivado la alarma del paciente " + camilla.getNombre());
-
-                    this.template.convertAndSend("/all/messages", message);
+                    RequestURL.request();
 
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 }
