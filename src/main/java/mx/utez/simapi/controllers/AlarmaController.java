@@ -91,8 +91,9 @@ public class AlarmaController {
                 Message message = new Message();
                 message.setTo("all");
                 message.setText("El paciente " + camilla.getNombre() + " ha activado la alarma");
+                String nombre = camilla.getNombre().split(" ")[0];
 
-                RequestURL.request();
+                RequestURL.request(1, camilla.getNumeroExpediente(), nombre);
 
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
@@ -156,7 +157,10 @@ public class AlarmaController {
                     response.setData(data);
                     response.setStatusCode(200);
 
-                    RequestURL.request();
+                    // Obtener solo el nombre eliminar lo deamas despues del espacio
+                    String nombre = camilla.getNombre().split(" ")[0];
+
+                    RequestURL.request(2, usuario.getIdUsuario(), nombre);
 
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 }
@@ -209,7 +213,10 @@ public class AlarmaController {
                     response.setData(data);
                     response.setStatusCode(200);
 
-                    RequestURL.request();
+                    // Obtener solo el nombre elimina todo despues del primer espacio
+                    String nombre = camilla.getNombre().split(" ")[0];
+
+                    RequestURL.request(2, idEnfermera, nombre);
 
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 }
