@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import mx.utez.simapi.models.Colores;
 import mx.utez.simapi.models.Institucion;
+import mx.utez.simapi.repository.ColoresRepository;
 import mx.utez.simapi.repository.InstitucionRepository;
 import mx.utez.simapi.utils.CustomHandlerException;
 import mx.utez.simapi.utils.CustomResponse;
@@ -28,6 +30,9 @@ import mx.utez.simapi.utils.UUIDGenerator;
 public class InstitucionController {
     @Autowired
     private InstitucionRepository institucionRepository;
+
+    @Autowired
+    private ColoresRepository coloresRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -64,6 +69,13 @@ public class InstitucionController {
                     institucion.setPassword(passwordEncoder.encode(institucion.getPassword()));
                     institucion.setLogo(
                             "https://firebasestorage.googleapis.com/v0/b/simapi-logos.appspot.com/o/default-logo.png?alt=media&token=924c860a-fed0-428c-8a0a-27d214e4abe6");
+                    Colores colores = new Colores();
+                    colores.setIdColores(UUIDGenerator.getId());
+                    colores.setIdInstitucion(institucion.getIdInstitucion());
+                    colores.setColorPrimario("#A2B3CF");
+                    colores.setColorSecundario("#385273");
+                    colores.setColorTerciario("#00264D");
+                    coloresRepository.save(colores);
                     institucionRepository.save(institucion);
                     response.setError(false);
                     response.setStatusCode(200);

@@ -18,6 +18,12 @@ public interface CamillasRepository extends MongoRepository<Camillas, String> {
 
     public Camillas findByIdBotonAndIdInstitucion(int idBoton, String idInstitucion);
 
+    @Query("{ 'idInstitucion': ?0, 'idSala': ?1 }")
+    public List<Camillas> findByIdInstitucionAndIdSala(String idInstitucion, int idSala);
+
+    @Query("{ 'idInstitucion': ?0, 'idIsla': ?1 }")
+    public List<Camillas> findByIdInstitucionAndIdIsla(String idInstitucion, int idIsla);
+
     @Query("{'idEnfermera.?0': { $in: [ ?1 ] }}")
     List<Camillas> findCamillasByTurnoAndId(String turno, String id);
 }

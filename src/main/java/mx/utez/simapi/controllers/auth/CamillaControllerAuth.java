@@ -144,4 +144,58 @@ public class CamillaControllerAuth {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/institucion/{idInstitucion}/sala/{idSala}")
+    public ResponseEntity<CustomResponse<List<Camillas>>> getCamillasBySala(@PathVariable String idInstitucion, @PathVariable int idSala) {
+        CustomResponse<List<Camillas>> response = new CustomResponse<List<Camillas>>();
+        try {
+            List<Camillas> camillas = camillasRepository.findByIdInstitucionAndIdSala(idInstitucion, idSala);
+            if (camillas == null) {
+                response.setError(true);
+                response.setStatusCode(200);
+                response.setMessage("No hay camillas");
+                response.setData(camillas);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            } else {
+                response.setError(false);
+                response.setStatusCode(200);
+                response.setMessage("Camillas obtenidas correctamente");
+                response.setData(camillas);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            response.setError(true);
+            response.setStatusCode(500);
+            response.setMessage(CustomHandlerException.handleException(e) + "\nCamillas no obtenidas");
+            response.setData(null);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/institucion/{idInstitucion}/isla/{idIsla}")
+    public ResponseEntity<CustomResponse<List<Camillas>>> getCamillasByIsla(@PathVariable String idInstitucion, @PathVariable int idIsla) {
+        CustomResponse<List<Camillas>> response = new CustomResponse<List<Camillas>>();
+        try {
+            List<Camillas> camillas = camillasRepository.findByIdInstitucionAndIdIsla(idInstitucion, idIsla);
+            if (camillas == null) {
+                response.setError(true);
+                response.setStatusCode(200);
+                response.setMessage("No hay camillas");
+                response.setData(camillas);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            } else {
+                response.setError(false);
+                response.setStatusCode(200);
+                response.setMessage("Camillas obtenidas correctamente");
+                response.setData(camillas);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            response.setError(true);
+            response.setStatusCode(500);
+            response.setMessage(CustomHandlerException.handleException(e) + "\nCamillas no obtenidas");
+            response.setData(null);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
