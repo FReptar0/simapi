@@ -143,7 +143,8 @@ public class CamillasController {
     }
 
     @GetMapping("/institucion/{idInstitucion}/sala/{idSala}")
-    public ResponseEntity<CustomResponse<List<Camillas>>> getCamillasBySala(@PathVariable String idInstitucion, @PathVariable int idSala) {
+    public ResponseEntity<CustomResponse<List<Camillas>>> getCamillasBySala(@PathVariable String idInstitucion,
+            @PathVariable int idSala) {
         CustomResponse<List<Camillas>> response = new CustomResponse<List<Camillas>>();
         try {
             List<Camillas> camillas = camillasRepository.findByIdInstitucionAndIdSala(idInstitucion, idSala);
@@ -170,7 +171,8 @@ public class CamillasController {
     }
 
     @GetMapping("/institucion/{idInstitucion}/isla/{idIsla}")
-    public ResponseEntity<CustomResponse<List<Camillas>>> getCamillasByIsla(@PathVariable String idInstitucion, @PathVariable int idIsla) {
+    public ResponseEntity<CustomResponse<List<Camillas>>> getCamillasByIsla(@PathVariable String idInstitucion,
+            @PathVariable int idIsla) {
         CustomResponse<List<Camillas>> response = new CustomResponse<List<Camillas>>();
         try {
             List<Camillas> camillas = camillasRepository.findByIdInstitucionAndIdIsla(idInstitucion, idIsla);
@@ -350,28 +352,50 @@ public class CamillasController {
             horario.setNocturno(nocturno);
             horarios.add(horario);
 
-            int camillaId = 0;
-            for (int ctSala = 1; ctSala <= idSala; ctSala++) {
-                for (int ctIslas = 1; ctIslas <= idIsla; ctIslas++) {
-                    Camillas camilla = new Camillas();
-                    camilla.setIdCamillas(UUIDGenerator.getId());
-                    camilla.setIdEnfermera(horarios);
-                    camilla.setIdInstitucion(idInstitucion);
-                    camilla.setIdIsla(ctIslas);
-                    camilla.setIdSala(ctSala);
-                    camilla.setNombre("");
-                    camilla.setNumeroExpediente("");
-                    camilla.setIdBoton(0);
-                    camilla.setEstado(false);
-                    camilla.setEstadoAlarma(false);
-                    camillas.add(camilla);
-                    camillaId++;
-                    if (camillaId >= cantidadCamillas) {
-                        break;
+            int salasPorIsla = idSala / idIsla;
+            int residuo = idSala % idIsla;
+            int indexIsla = 1;
+            int indexSala = 1;
+            int indexBoton = 1;
+            for (int i = 0; i < idIsla; i++) {
+                for (int j = 0; j < salasPorIsla; j++) {
+                    for (int k = 0; k < 10; k++) {
+                        Camillas camilla = new Camillas();
+                        camilla.setIdCamillas(UUIDGenerator.getId());
+                        camilla.setIdEnfermera(horarios);
+                        camilla.setIdInstitucion(idInstitucion);
+                        camilla.setIdIsla(indexIsla);
+                        camilla.setIdSala(indexSala);
+                        camilla.setNombre("");
+                        camilla.setNumeroExpediente("");
+                        camilla.setIdBoton(indexBoton);
+                        camilla.setEstado(false);
+                        camilla.setEstadoAlarma(false);
+                        camillas.add(camilla);
+                        indexBoton++;
                     }
+                    indexSala++;
                 }
-                if (camillaId >= cantidadCamillas) {
-                    break;
+                indexIsla++;
+                if (indexIsla == idIsla) {
+                    for (int j = 0; j < residuo; j++) {
+                        for (int k = 0; k < 10; k++) {
+                            Camillas camilla = new Camillas();
+                            camilla.setIdCamillas(UUIDGenerator.getId());
+                            camilla.setIdEnfermera(horarios);
+                            camilla.setIdInstitucion(idInstitucion);
+                            camilla.setIdIsla(indexIsla);
+                            camilla.setIdSala(indexSala);
+                            camilla.setNombre("");
+                            camilla.setNumeroExpediente("");
+                            camilla.setIdBoton(indexBoton);
+                            camilla.setEstado(false);
+                            camilla.setEstadoAlarma(false);
+                            camillas.add(camilla);
+                            indexBoton++;
+                        }
+                        indexSala++;
+                    }
                 }
             }
 
