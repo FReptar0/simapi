@@ -16,6 +16,8 @@ public interface CamillasRepository extends MongoRepository<Camillas, String> {
 
     public List<Camillas> findByIdIsla(int idIsla);
 
+    public Camillas findByIdBotonAndIdInstitucion(int idBoton, String idInstitucion);
+
     @Query("{'idEnfermera.?0': { $in: [ ?1 ] }}")
     List<Camillas> findCamillasByTurnoAndId(String turno, String id);
 }
