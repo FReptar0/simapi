@@ -192,15 +192,12 @@ public class UsuariosController {
                 response.setData(usuario);
             } else {
                 if (usuario.getRol().equals("SA") || usuario.getRol().equals("E") || usuario.getRol().equals("A")) {
-                    System.out.println("entro al segundo if");
                     if (usuario.getRol().equals("SA") && usuariosRepository.countSA() > 0) {
-                        System.out.println("entro al tercer if");
                         response.setError(true);
                         response.setStatusCode(400);
                         response.setMessage("Usuario no actualizado, rol SA ya existente");
                         response.setData(usuario);
                     } else {
-                        System.out.println("entro al tercer else");
                         usuarioDB.setNombre(usuario.getNombre());
                         usuarioDB.setCorreo(usuario.getCorreo());
                         if(usuario.getPassword() != null){
@@ -217,6 +214,40 @@ public class UsuariosController {
                         response.setData(usuarioDB);
                     }
                 }
+            }
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setError(true);
+            response.setMessage(CustomHandlerException.handleException(e) + "\nError al actualizar usuario");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/password/{idUsuario}/{password}")
+    public ResponseEntity<CustomResponse<Usuarios>> updatePassword(@PathVariable String idUsuario,
+            @PathVariable String password) {
+        CustomResponse<Usuarios> response = new CustomResponse<>();
+        try {
+            Usuarios usuarioDB = usuariosRepository.findById(idUsuario).orElse(null);
+            if (usuarioDB == null) {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("Usuario no actualizado, no encontrado");
+                response.setData(usuarioDB);
+            } else if (password == null) {
+                response.setError(true);
+                response.setStatusCode(400);
+                response.setMessage("Usuario no actualizado, datos incompletos");
+                response.setData(usuarioDB);
+            } else {
+                usuarioDB.setPassword(passwordEncoder.encode(password));
+                usuarioDB = usuariosRepository.save(usuarioDB);
+                response.setError(false);
+                response.setStatusCode(200);
+                response.setMessage("Usuario actualizado correctamente");
+                usuarioDB.setPassword(null);
+                response.setData(usuarioDB);
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
