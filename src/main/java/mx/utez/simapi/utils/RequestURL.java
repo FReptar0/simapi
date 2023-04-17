@@ -11,7 +11,7 @@ public class RequestURL {
 
             if (action == 1) {
                 // Establecer la URL de la petición GET
-                URL url = new URL("http://192.168.1.83:3000/api/send-message/activate/" + idEnfermera + "/" + nombre);
+                URL url = new URL("http://54.198.174.61:3000/api/send-message/activate/" + idEnfermera + "/" + nombre);
 
                 // Crear una conexión HttpURLConnection
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -32,7 +32,7 @@ public class RequestURL {
                 System.out.println(response.toString());
             } else if (action == 2) {
                 // Establecer la URL de la petición GET
-                URL url = new URL("http://192.168.1.83:3000/api/send-message/deactivate/" + idEnfermera + "/" + nombre);
+                URL url = new URL("http://54.198.174.61:3000/api/send-message/deactivate/" + idEnfermera + "/" + nombre);
 
                 // Crear una conexión HttpURLConnection
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
