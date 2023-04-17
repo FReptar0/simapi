@@ -6,7 +6,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,9 +46,6 @@ public class AlarmaController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private SimpMessagingTemplate template;
 
     @GetMapping("/activate/{idBoton}/idInstitucion/{idInstitucion}")
     public ResponseEntity<CustomResponse<Object>> activateAlarm(@PathVariable int idBoton,
