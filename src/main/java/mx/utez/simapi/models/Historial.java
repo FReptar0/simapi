@@ -23,4 +23,6 @@ public class Historial {
     private String idPaciente;
     private String idEnfermera;
     private String idCamilla;
+    private String nombrePaciente;
+    private String nombreEnfermera;
 }

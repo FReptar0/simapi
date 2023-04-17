@@ -73,7 +73,8 @@ public class AlarmaController {
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             } else {
                 Historial historial = new Historial(UUIDGenerator.getId(), tiempo.getFecha(), tiempo.getHora(), "", "",
-                        camilla.getIdInstitucion(), camilla.getNumeroExpediente(), "", camilla.getIdCamillas());
+                        camilla.getIdInstitucion(), camilla.getNumeroExpediente(), "", camilla.getIdCamillas(),
+                        camilla.getNombre(), "");
                 historialRepository.save(historial);
                 camilla.setEstadoAlarma(true);
                 camillasRepository.save(camilla);
@@ -143,6 +144,7 @@ public class AlarmaController {
                     historial.setFechaAtencion(Time.getTime().getFecha());
                     historial.setHoraDeAtencion(Time.getTime().getHora());
                     historial.setIdEnfermera(usuario.getIdUsuario());
+                    historial.setNombreEnfermera(usuario.getNombre() + " " + usuario.getApellidos());
                     historialRepository.save(historial);
                     camilla.setEstadoAlarma(false);
                     camillasRepository.save(camilla);
@@ -199,6 +201,8 @@ public class AlarmaController {
                     historial.setFechaAtencion(Time.getTime().getFecha());
                     historial.setHoraDeAtencion(Time.getTime().getHora());
                     historial.setIdEnfermera(idEnfermera);
+                    Usuarios usuario = usuariosRepository.findById(idEnfermera).orElse(null);
+                    historial.setNombreEnfermera(usuario.getNombre() + " " + usuario.getApellidos());
                     historialRepository.save(historial);
                     camilla.setEstadoAlarma(false);
                     camillasRepository.save(camilla);
