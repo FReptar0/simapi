@@ -187,7 +187,8 @@ public class AlarmaController {
                 response.setStatusCode(404);
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             } else {
-                Historial historial = historialRepository.findTopByOrderByIdCamillaDesc(idCamilla);
+                List<Historial> historiales = historialRepository.findByIdInstitucion(camilla.getIdInstitucion());
+                Historial historial = historiales.get(historiales.size() - 1);
                 if (historial == null) {
                     response.setError(true);
                     response.setMessage("No se encontró el historial");
