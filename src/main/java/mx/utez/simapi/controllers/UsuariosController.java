@@ -199,6 +199,7 @@ public class UsuariosController {
                         response.setData(usuario);
                     } else {
                         usuarioDB.setNombre(usuario.getNombre());
+                        usuarioDB.setApellidos(usuario.getApellidos());
                         usuarioDB.setCorreo(usuario.getCorreo());
                         if(usuario.getPassword() != null){
                             usuarioDB.setPassword(passwordEncoder.encode(usuario.getPassword()));
